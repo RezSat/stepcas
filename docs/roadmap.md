@@ -17,8 +17,15 @@
 - [ ] General like-term collection across transformed forms
 - [x] Linear equation solving
 - [x] JSON trace export
-- [ ] Error taxonomy
+- [x] Error taxonomy
 - [x] Benchmarks
+
+## Decision records added in this phase
+
+- [x] Canonicalization policy and current scope (`docs/adr/0002-canonicalization-policy.md`)
+- [x] Solve scope boundaries (`docs/adr/0003-solve-scope-boundaries.md`)
+- [x] JSON trace schema contract (`docs/adr/0004-json-trace-schema-contract.md`)
+- [x] Error taxonomy contract (`docs/adr/0005-error-taxonomy-contract.md`)
 
 ## Milestone 2
 
