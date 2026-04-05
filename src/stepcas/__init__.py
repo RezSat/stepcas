@@ -13,6 +13,7 @@ from .polynomial import (
     polynomial_coeff_vector,
     polynomial_coefficients,
     polynomial_degree,
+    polynomial_leading_coefficient,
     polynomial_leading_term,
 )
 from .json_trace import SCHEMA_VERSION, expr_to_json, step_to_json, trace_result_to_json
@@ -58,6 +59,7 @@ __all__ = [
     "polynomial_coefficients",
     "polynomial_coeff_vector",
     "polynomial_degree",
+    "polynomial_leading_coefficient",
     "polynomial_leading_term",
     "solve_linear_equation",
     "step_to_json",

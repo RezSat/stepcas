@@ -33,6 +33,7 @@ This starter implements:
 - one-variable polynomial coefficient extraction (`polynomial_coefficients`) for already-expanded forms,
 - one-variable dense polynomial coefficient vectors (`polynomial_coeff_vector`) for already-expanded forms,
 - one-variable polynomial leading-term extraction (`polynomial_leading_term`) for already-expanded forms,
+- one-variable polynomial leading-coefficient extraction (`polynomial_leading_coefficient`) for already-expanded forms,
 - symbolic differentiation for a useful subset,
 - linear-form extraction for expressions in `a*x + b` form,
 - core linear equation solving API (`solve_linear_equation`) with step tracing,
@@ -94,6 +95,7 @@ from stepcas import (
     polynomial_coeff_vector,
     polynomial_coefficients,
     polynomial_degree,
+    polynomial_leading_coefficient,
     polynomial_leading_term,
     simplify,
     solve_linear_equation,
@@ -122,6 +124,9 @@ print(vector)  # [3, 0, 0, -2, 5]
 
 leading = polynomial_leading_term(parse_expr("3*x**4 - 2*x + 5"), "x")
 print(leading)  # (4, 3)
+
+leading_coefficient = polynomial_leading_coefficient(parse_expr("3*x**4 - 2*x + 5"), "x")
+print(leading_coefficient)  # 3
 
 solved = solve_linear_equation(parse_expr("2*x + 3"), parse_expr("11"), "x")
 if solved.kind == LinearSolveKind.SOLVED:

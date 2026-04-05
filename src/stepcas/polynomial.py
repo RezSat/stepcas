@@ -57,6 +57,12 @@ def polynomial_leading_term(expr: Expr, variable: str) -> tuple[int, NumberLike]
     return degree, coefficients[degree]
 
 
+def polynomial_leading_coefficient(expr: Expr, variable: str) -> NumberLike:
+    """Return the leading coefficient of a one-variable polynomial."""
+
+    return polynomial_leading_term(expr, variable)[1]
+
+
 def _validate_polynomial_variable(variable: str) -> None:
     if isinstance(variable, str) and variable and variable.isidentifier():
         return

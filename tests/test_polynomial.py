@@ -7,6 +7,7 @@ from stepcas import (
     parse_expr,
     polynomial_coefficients,
     polynomial_degree,
+    polynomial_leading_coefficient,
     polynomial_leading_term,
     simplify,
 )
@@ -144,5 +145,28 @@ def test_polynomial_leading_term_rejects_non_polynomial_power() -> None:
     expr = simplify(parse_expr("x**-1"))
     with pytest.raises(PolynomialError) as exc_info:
         polynomial_leading_term(expr, "x")
+
+    assert exc_info.value.code == POLYNOMIAL_NON_POLYNOMIAL_FORM
+
+
+def test_polynomial_leading_coefficient_selects_highest_power() -> None:
+    expr = simplify(parse_expr("3*x**4 + 2*x - 1"))
+    assert polynomial_leading_coefficient(expr, "x") == 3
+
+
+def test_polynomial_leading_coefficient_collects_like_powers() -> None:
+    expr = simplify(parse_expr("5*x**3 - 2*x**3 + x"))
+    assert polynomial_leading_coefficient(expr, "x") == 3
+
+
+def test_polynomial_leading_coefficient_zero_polynomial() -> None:
+    expr = simplify(parse_expr("x - x"))
+    assert polynomial_leading_coefficient(expr, "x") == 0
+
+
+def test_polynomial_leading_coefficient_rejects_non_polynomial_power() -> None:
+    expr = simplify(parse_expr("x**-1"))
+    with pytest.raises(PolynomialError) as exc_info:
+        polynomial_leading_coefficient(expr, "x")
 
     assert exc_info.value.code == POLYNOMIAL_NON_POLYNOMIAL_FORM
