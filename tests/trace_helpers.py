@@ -5,7 +5,10 @@ from collections.abc import Sequence
 from stepcas import Expr, Step, TraceResult
 
 
-def assert_trace_rule_sequence(steps: Sequence[Step], expected_rules: Sequence[str]) -> None:
+def assert_trace_rule_sequence(
+    trace: Sequence[Step] | TraceResult, expected_rules: Sequence[str]
+) -> None:
+    steps = trace.steps if isinstance(trace, TraceResult) else trace
     assert [step.rule for step in steps] == list(expected_rules)
 
 

@@ -12,7 +12,7 @@ def test_simplify_trace_rule_sequence_and_integrity() -> None:
 
     trace_result = simplify(expr, trace=True)
     assert trace_result.expr == Symbol("x")
-    assert_trace_rule_sequence(trace_result.steps, ["fold-add-constants", "collapse-single-add"])
+    assert_trace_rule_sequence(trace_result, ["fold-add-constants", "collapse-single-add"])
     assert_trace_before_after_integrity(expr, trace_result)
 
 
@@ -45,7 +45,7 @@ def test_nested_add_flatten_and_fold_reaches_stable_fixpoint() -> None:
 
     trace_result = simplify(simplified, trace=True)
     assert trace_result.expr == Symbol("x")
-    assert_trace_rule_sequence(trace_result.steps, [])
+    assert_trace_rule_sequence(trace_result, [])
     assert_trace_before_after_integrity(simplified, trace_result)
 
 
@@ -57,5 +57,5 @@ def test_nested_mul_flatten_and_fold_reaches_stable_fixpoint() -> None:
 
     trace_result = simplify(simplified, trace=True)
     assert trace_result.expr == Mul(Number(24), Symbol("x"))
-    assert_trace_rule_sequence(trace_result.steps, [])
+    assert_trace_rule_sequence(trace_result, [])
     assert_trace_before_after_integrity(simplified, trace_result)

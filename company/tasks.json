@@ -12,7 +12,7 @@
   {
     "id": "T-010",
     "title": "Parser precedence and rejection regression pack",
-    "agent": "test-engineer",
+    "agent": "lead-engineer",
     "command": "/test-gap Add parser regression tests for precedence/associativity and unsupported syntax rejection (calls, floor-div, malformed input). Keep patch test-only.",
     "status": "done",
     "priority": 10,
@@ -22,7 +22,7 @@
   {
     "id": "T-011",
     "title": "Simplify edge-case regression around power identities",
-    "agent": "test-engineer",
+    "agent": "lead-engineer",
     "command": "/test-gap Add simplify regression tests for identity edge cases, especially 0-power corner behavior and nested flatten/fold fixpoint behavior.",
     "status": "done",
     "priority": 11,
@@ -32,9 +32,9 @@
   {
     "id": "T-012",
     "title": "Trace invariant test helpers",
-    "agent": "test-engineer",
+    "agent": "lead-engineer",
     "command": "/test-gap Introduce reusable test helpers for step traces (rule sequence and before/after integrity) and adopt in simplify+differentiate tests.",
-    "status": "queued",
+    "status": "done",
     "priority": 12,
     "branch": "tests/trace-invariants",
     "notes": "depends_on: [T-011]; acceptance: helper assertions exist, at least one simplify and one differentiate trace test use them, no production behavior change."
@@ -42,7 +42,7 @@
   {
     "id": "T-020",
     "title": "Deterministic expression sort key utility",
-    "agent": "math-architect",
+    "agent": "lead-engineer",
     "command": "/design-rule Define a stable total order utility for Expr nodes (Number/Symbol/Pow/Mul/Add) to support canonicalization without leaking policy across rules.",
     "status": "queued",
     "priority": 20,
@@ -62,7 +62,7 @@
   {
     "id": "T-022",
     "title": "Additive term decomposition helper",
-    "agent": "math-architect",
+    "agent": "lead-engineer",
     "command": "/design-rule Add a small helper that decomposes additive terms into (numeric coefficient, symbolic core) for x, -x, 3*x, and canonical products.",
     "status": "queued",
     "priority": 22,
@@ -92,7 +92,7 @@
   {
     "id": "T-040",
     "title": "Linear form extractor (single variable)",
-    "agent": "math-architect",
+    "agent": "lead-engineer",
     "command": "/design-rule Implement helper extracting ax+b from simplified expressions for one variable, with typed rejection for non-linear forms.",
     "status": "queued",
     "priority": 40,
@@ -142,7 +142,7 @@
   {
     "id": "T-060",
     "title": "Benchmark harness baseline",
-    "agent": "benchmark-engineer",
+    "agent": "lead-engineer",
     "command": "/benchmark Add reproducible benchmark harness for simplify/differentiate/solve workloads with runtime and step-count output plus baseline recording docs.",
     "status": "queued",
     "priority": 60,
@@ -152,7 +152,7 @@
   {
     "id": "T-070",
     "title": "Roadmap and ADR sync after Milestone 1 slices",
-    "agent": "doc-writer",
+    "agent": "lead-engineer",
     "command": "/docs-sync Update roadmap and add ADR notes for canonicalization, solve scope boundaries, JSON trace schema contract, and error taxonomy decisions.",
     "status": "queued",
     "priority": 70,

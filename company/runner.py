@@ -83,7 +83,7 @@ def run_task(task: Task) -> int:
     # Run through cmd because manual cmd execution works on your machine
     cmd = ["cmd", "/c", *raw_cmd]
 
-    with log_path.open("a", encoding="utf-8") as log_file:
+    with log_path.open("a", encoding="utf-8", errors="replace") as log_file:
         start_line = f"\n\n===== START {time.ctime()} =====\n"
         command_line = "COMMAND: " + " ".join(cmd) + "\n"
 
@@ -106,6 +106,8 @@ def run_task(task: Task) -> int:
             stderr=subprocess.STDOUT,
             stdin=subprocess.DEVNULL,
             text=True,
+            encoding="utf-8",
+            errors="replace",
             shell=False,
             bufsize=1,
             env=env,
