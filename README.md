@@ -34,6 +34,7 @@ This starter implements:
 - one-variable dense polynomial coefficient vectors (`polynomial_coeff_vector`) for already-expanded forms,
 - one-variable polynomial leading-term extraction (`polynomial_leading_term`) for already-expanded forms,
 - one-variable polynomial leading-coefficient extraction (`polynomial_leading_coefficient`) for already-expanded forms,
+- one-variable polynomial trailing-coefficient extraction (`polynomial_trailing_coefficient`) for already-expanded forms,
 - symbolic differentiation for a useful subset,
 - linear-form extraction for expressions in `a*x + b` form,
 - core linear equation solving API (`solve_linear_equation`) with step tracing,
@@ -44,6 +45,7 @@ This starter implements:
 - repo scaffolding for agentic development.
 
 Polynomial utilities validate `variable` strictly: it must be a single symbol name (for example, `"x"`).
+`polynomial_trailing_coefficient` returns the degree-zero coefficient and yields `0` when no constant term is present.
 
 ## Quick start
 
@@ -97,6 +99,7 @@ from stepcas import (
     polynomial_degree,
     polynomial_leading_coefficient,
     polynomial_leading_term,
+    polynomial_trailing_coefficient,
     simplify,
     solve_linear_equation,
 )
@@ -127,6 +130,9 @@ print(leading)  # (4, 3)
 
 leading_coefficient = polynomial_leading_coefficient(parse_expr("3*x**4 - 2*x + 5"), "x")
 print(leading_coefficient)  # 3
+
+trailing_coefficient = polynomial_trailing_coefficient(parse_expr("3*x**4 - 2*x + 5"), "x")
+print(trailing_coefficient)  # 5
 
 solved = solve_linear_equation(parse_expr("2*x + 3"), parse_expr("11"), "x")
 if solved.kind == LinearSolveKind.SOLVED:

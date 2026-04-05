@@ -15,6 +15,7 @@ from .polynomial import (
     polynomial_degree,
     polynomial_leading_coefficient,
     polynomial_leading_term,
+    polynomial_trailing_coefficient,
 )
 from .json_trace import SCHEMA_VERSION, expr_to_json, step_to_json, trace_result_to_json
 from .parser import parse_expr
@@ -61,6 +62,7 @@ __all__ = [
     "polynomial_degree",
     "polynomial_leading_coefficient",
     "polynomial_leading_term",
+    "polynomial_trailing_coefficient",
     "solve_linear_equation",
     "step_to_json",
     "simplify",

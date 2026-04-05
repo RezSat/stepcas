@@ -9,6 +9,7 @@ from stepcas import (
     polynomial_degree,
     polynomial_leading_coefficient,
     polynomial_leading_term,
+    polynomial_trailing_coefficient,
     simplify,
 )
 from stepcas.errors import (
@@ -168,5 +169,28 @@ def test_polynomial_leading_coefficient_rejects_non_polynomial_power() -> None:
     expr = simplify(parse_expr("x**-1"))
     with pytest.raises(PolynomialError) as exc_info:
         polynomial_leading_coefficient(expr, "x")
+
+    assert exc_info.value.code == POLYNOMIAL_NON_POLYNOMIAL_FORM
+
+
+def test_polynomial_trailing_coefficient_returns_constant_term() -> None:
+    expr = simplify(parse_expr("3*x**4 - 2*x + 5"))
+    assert polynomial_trailing_coefficient(expr, "x") == 5
+
+
+def test_polynomial_trailing_coefficient_returns_zero_when_missing_constant() -> None:
+    expr = simplify(parse_expr("3*x**4 - 2*x"))
+    assert polynomial_trailing_coefficient(expr, "x") == 0
+
+
+def test_polynomial_trailing_coefficient_zero_polynomial() -> None:
+    expr = simplify(parse_expr("x - x"))
+    assert polynomial_trailing_coefficient(expr, "x") == 0
+
+
+def test_polynomial_trailing_coefficient_rejects_non_polynomial_power() -> None:
+    expr = simplify(parse_expr("x**-1"))
+    with pytest.raises(PolynomialError) as exc_info:
+        polynomial_trailing_coefficient(expr, "x")
 
     assert exc_info.value.code == POLYNOMIAL_NON_POLYNOMIAL_FORM

@@ -63,6 +63,12 @@ def polynomial_leading_coefficient(expr: Expr, variable: str) -> NumberLike:
     return polynomial_leading_term(expr, variable)[1]
 
 
+def polynomial_trailing_coefficient(expr: Expr, variable: str) -> NumberLike:
+    """Return the constant-term (degree-zero) coefficient of a polynomial."""
+
+    return polynomial_coefficients(expr, variable).get(0, 0)
+
+
 def _validate_polynomial_variable(variable: str) -> None:
     if isinstance(variable, str) and variable and variable.isidentifier():
         return
