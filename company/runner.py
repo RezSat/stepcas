@@ -67,7 +67,8 @@ def pick_next(tasks: list[Task]) -> Task | None:
 def run_task(task: Task) -> int:
     log_path = LOG_DIR / f"{task.id}.log"
     title = f"{task.id} {task.title}"
-    cmd = [
+
+    raw_cmd = [
         "opencode",
         "run",
         "--attach",
@@ -78,6 +79,9 @@ def run_task(task: Task) -> int:
         title,
         task.command,
     ]
+
+    # Run through cmd because manual cmd execution works on your machine
+    cmd = ["cmd", "/c", *raw_cmd]
 
     with log_path.open("a", encoding="utf-8") as log_file:
         start_line = f"\n\n===== START {time.ctime()} =====\n"
@@ -90,14 +94,21 @@ def run_task(task: Task) -> int:
         log_file.write(command_line)
         log_file.flush()
 
+        env = os.environ.copy()
+        env["CI"] = "1"
+        env["TERM"] = "dumb"
+        env["NO_COLOR"] = "1"
+
         proc = subprocess.Popen(
             cmd,
             cwd=ROOT,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
+            stdin=subprocess.DEVNULL,
             text=True,
             shell=False,
             bufsize=1,
+            env=env,
         )
 
         assert proc.stdout is not None
@@ -115,7 +126,7 @@ def run_task(task: Task) -> int:
         log_file.flush()
 
         return proc.returncode
-
+    
 def main() -> int:
     print("StepCAS company runner started")
     print(f"Attach URL: {ATTACH_URL}")
