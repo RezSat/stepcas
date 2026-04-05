@@ -65,6 +65,22 @@ for step in result.steps:
     print(step.rule, step.before, "=>", step.after)
 ```
 
+
+## OpenCode workflow
+
+This repository is set up to work well with OpenCode in two styles:
+
+1. Interactive TUI when you want to inspect and steer manually.
+2. Headless server plus one-shot `opencode run --attach ...` calls when you want clean, task-scoped sessions.
+
+Recommended for this project:
+
+- keep one long-lived `opencode serve` process running
+- use separate `opencode run --attach ...` calls for planning, implementation, debugging, and review
+- avoid a never-ending optimization loop, this project is product engineering, not a single-metric ratchet
+
+PowerShell helpers are included under `scripts/`.
+
 ## Architecture
 
 The long-term design is four layers:

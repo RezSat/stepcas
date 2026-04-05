@@ -1,0 +1,52 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "lead-engineer",
+  "instructions": ["AGENTS.md", "program.md", "docs/architecture.md", "docs/roadmap.md"],
+  "permission": {
+    "edit": "ask",
+    "bash": {
+      "*": "ask",
+      "git status*": "allow",
+      "git diff*": "allow",
+      "git log*": "allow",
+      "git branch*": "allow",
+      "pytest*": "allow",
+      "python -m pytest*": "allow",
+      "ruff check*": "allow",
+      "python -m pip*": "ask"
+    }
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "reserved": 12000
+  },
+  "watcher": {
+    "ignore": [
+      ".git/**",
+      ".venv/**",
+      "__pycache__/**",
+      ".pytest_cache/**",
+      "build/**",
+      "dist/**"
+    ]
+  },
+  "agent": {
+    "lead-engineer": {
+      "description": "Primary orchestrator for stepcas development",
+      "mode": "primary",
+      "temperature": 0.1,
+      "permission": {
+        "task": {
+          "*": "deny",
+          "math-architect": "allow",
+          "test-engineer": "allow",
+          "benchmark-engineer": "allow",
+          "debug-engineer": "allow",
+          "doc-writer": "allow",
+          "prompt-improver": "allow"
+        }
+      }
+    }
+  }
+}
