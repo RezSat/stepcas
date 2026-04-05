@@ -4,6 +4,7 @@ from __future__ import annotations
 ERROR_DOMAIN_PARSE = "parse"
 ERROR_DOMAIN_DIFFERENTIATE = "differentiate"
 ERROR_DOMAIN_REWRITE = "rewrite"
+ERROR_DOMAIN_LINEAR = "linear"
 
 PARSE_SYNTAX_ERROR = "parse.syntax"
 PARSE_UNSUPPORTED_SYNTAX = "parse.unsupported_syntax"
@@ -12,6 +13,10 @@ DIFFERENTIATE_NON_CONSTANT_EXPONENT = "differentiate.non_constant_exponent"
 DIFFERENTIATE_UNSUPPORTED_EXPRESSION = "differentiate.unsupported_expression"
 
 REWRITE_INVALID_RULE_RESULT = "rewrite.invalid_rule_result"
+
+LINEAR_NONLINEAR_FORM = "linear.nonlinear_form"
+LINEAR_UNSUPPORTED_STRUCTURE = "linear.unsupported_structure"
+LINEAR_UNSUPPORTED_SYMBOL = "linear.unsupported_symbol"
 
 
 class StepcasError(Exception):
@@ -46,13 +51,23 @@ class RewriteError(StepcasError, ValueError):
         super().__init__(message, domain=ERROR_DOMAIN_REWRITE, code=code)
 
 
+class LinearFormError(StepcasError, ValueError):
+    def __init__(self, message: str, *, code: str = LINEAR_UNSUPPORTED_STRUCTURE) -> None:
+        super().__init__(message, domain=ERROR_DOMAIN_LINEAR, code=code)
+
+
 __all__ = [
+    "ERROR_DOMAIN_LINEAR",
     "DIFFERENTIATE_NON_CONSTANT_EXPONENT",
     "DIFFERENTIATE_UNSUPPORTED_EXPRESSION",
     "DifferentiationError",
     "ERROR_DOMAIN_DIFFERENTIATE",
     "ERROR_DOMAIN_PARSE",
     "ERROR_DOMAIN_REWRITE",
+    "LINEAR_NONLINEAR_FORM",
+    "LINEAR_UNSUPPORTED_STRUCTURE",
+    "LINEAR_UNSUPPORTED_SYMBOL",
+    "LinearFormError",
     "PARSE_SYNTAX_ERROR",
     "PARSE_UNSUPPORTED_SYNTAX",
     "ParseError",

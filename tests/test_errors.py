@@ -4,14 +4,17 @@ from stepcas import Expr, Number, Pow, Symbol, differentiate, parse_expr
 from stepcas.errors import (
     DIFFERENTIATE_NON_CONSTANT_EXPONENT,
     DIFFERENTIATE_UNSUPPORTED_EXPRESSION,
+    LINEAR_NONLINEAR_FORM,
     PARSE_SYNTAX_ERROR,
     PARSE_UNSUPPORTED_SYNTAX,
     REWRITE_INVALID_RULE_RESULT,
     DifferentiationError,
+    LinearFormError,
     ParseError,
     RewriteError,
     StepcasError,
 )
+from stepcas.linear_form import extract_linear_form
 from stepcas.rewrite import rewrite_fixpoint
 
 
@@ -60,3 +63,14 @@ def test_rewrite_error_has_stable_code_for_invalid_rule_result_shape() -> None:
     assert isinstance(err, ValueError)
     assert err.domain == "rewrite"
     assert err.code == REWRITE_INVALID_RULE_RESULT
+
+
+def test_linear_form_error_uses_shared_hierarchy_and_stable_code() -> None:
+    with pytest.raises(LinearFormError) as exc_info:
+        extract_linear_form(parse_expr("x**2"), "x")
+
+    err = exc_info.value
+    assert isinstance(err, StepcasError)
+    assert isinstance(err, ValueError)
+    assert err.domain == "linear"
+    assert err.code == LINEAR_NONLINEAR_FORM

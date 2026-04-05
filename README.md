@@ -30,6 +30,7 @@ This starter implements:
 - canonical ordering for addition and multiplication with explicit trace steps (`canonical-order-add` and `canonical-order-mul`),
 - additive-only exact like-term collection with explicit trace steps (`collect-like-terms-add`) without expansion/factoring,
 - symbolic differentiation for a useful subset,
+- linear-form extraction for expressions in `a*x + b` form,
 - terminal interface,
 - test suite,
 - repo scaffolding for agentic development.
@@ -58,18 +59,23 @@ stepcas diff "x**3 + 2*x + 5" x --steps
 Use as a library:
 
 ```python
-from stepcas import parse_expr, simplify, differentiate
+from stepcas import differentiate, extract_linear_form, parse_expr, simplify
 
 expr = parse_expr("x**3 + 2*x + 5")
 result = differentiate(expr, "x", trace=True)
 print(result.expr)
 for step in result.steps:
     print(step.rule, step.before, "=>", step.after)
+
+linear = extract_linear_form(parse_expr("3*x - 7"), "x")
+print(linear.coefficient, linear.constant)  # 3 -7
 ```
 
 Error handling is exposed through a shared hierarchy rooted at `StepcasError`,
 with domain-specific subclasses such as `ParseError`, `DifferentiationError`,
-and `RewriteError`. Each carries a stable machine-friendly `code` and `domain`.
+`RewriteError`, and `LinearFormError`. Each carries a stable machine-friendly
+`code` and `domain` (for example: `linear.nonlinear_form`,
+`linear.unsupported_structure`, and `linear.unsupported_symbol`).
 
 
 ## OpenCode workflow
