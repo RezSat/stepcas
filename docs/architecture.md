@@ -17,11 +17,12 @@ Every non-trivial symbolic transformation should be modelled as a named rule:
 - simplify-add-zero
 - simplify-mul-one
 - fold-constants-add
+- merge-repeated-bases-mul
 - collect-like-terms-add
 - derivative-power
 
 This creates a traceable symbolic pipeline.
-Like-term collection is currently additive-only and relies on ordering rewrites to preserve canonical form.
+Like-term collection is currently additive-only; multiplication also has explicit repeated-base merging (`merge-repeated-bases-mul`) to preserve canonical power form.
 
 ### 3. Steps are data
 

@@ -327,6 +327,50 @@ def rule_canonical_order_mul(expr: Expr) -> Optional[tuple[Expr, str]]:
     return Mul(*ordered_factors), "Canonicalize multiplication factor order"
 
 
+def rule_merge_repeated_bases_mul(expr: Expr) -> Optional[tuple[Expr, str]]:
+    if not isinstance(expr, Mul):
+        return None
+
+    exponent_by_base: dict[Expr, int] = {}
+    untouched_factors = []
+    for factor in expr.factors:
+        if isinstance(factor, Number):
+            untouched_factors.append(factor)
+            continue
+
+        if (
+            isinstance(factor, Pow)
+            and isinstance(factor.exponent, Number)
+            and isinstance(factor.exponent.value, int)
+            and factor.exponent.value >= 1
+            and not isinstance(factor.base, Number)
+        ):
+            exponent_by_base[factor.base] = (
+                exponent_by_base.get(factor.base, 0) + factor.exponent.value
+            )
+            continue
+
+        if isinstance(factor, Pow):
+            untouched_factors.append(factor)
+            continue
+
+        exponent_by_base[factor] = exponent_by_base.get(factor, 0) + 1
+
+    merged_factors = []
+    for base in sorted(exponent_by_base, key=expr_sort_key):
+        exponent = exponent_by_base[base]
+        if exponent == 1:
+            merged_factors.append(base)
+        else:
+            merged_factors.append(Pow(base, Number(exponent)))
+
+    rebuilt_factors = tuple(sorted([*untouched_factors, *merged_factors], key=expr_sort_key))
+    rebuilt = Mul(*rebuilt_factors)
+    if rebuilt == expr:
+        return None
+    return rebuilt, "Merge repeated multiplicative bases into integer powers"
+
+
 DEFAULT_RULES: List[tuple[str, RuleFn]] = [
     ("flatten-add", rule_flatten_add),
     ("flatten-mul", rule_flatten_mul),
@@ -335,6 +379,7 @@ DEFAULT_RULES: List[tuple[str, RuleFn]] = [
     ("remove-add-zero", rule_remove_add_zero),
     ("remove-mul-one", rule_remove_mul_one),
     ("canonical-order-mul", rule_canonical_order_mul),
+    ("merge-repeated-bases-mul", rule_merge_repeated_bases_mul),
     ("collect-like-terms-add", rule_collect_like_terms_add),
     ("canonical-order-add", rule_canonical_order_add),
     ("collapse-single-add", rule_collapse_single_add),
