@@ -32,6 +32,7 @@ This starter implements:
 - symbolic differentiation for a useful subset,
 - linear-form extraction for expressions in `a*x + b` form,
 - core linear equation solving API (`solve_linear_equation`) with step tracing,
+- schema-versioned JSON serializers for `Expr`, `Step`, and `TraceResult` (`expr_to_json`, `step_to_json`, `trace_result_to_json`),
 - terminal interface,
 - test suite,
 - repo scaffolding for agentic development.
@@ -62,6 +63,7 @@ Use as a library:
 ```python
 from stepcas import (
     LinearSolveKind,
+    expr_to_json,
     differentiate,
     extract_linear_form,
     parse_expr,
@@ -75,6 +77,9 @@ print(result.expr)
 for step in result.steps:
     print(step.rule, step.before, "=>", step.after)
 
+trace_payload = expr_to_json(expr)
+print(trace_payload["schema_version"], trace_payload["object"])
+
 linear = extract_linear_form(parse_expr("3*x - 7"), "x")
 print(linear.coefficient, linear.constant)  # 3 -7
 
@@ -82,6 +87,8 @@ solved = solve_linear_equation(parse_expr("2*x + 3"), parse_expr("11"), "x")
 if solved.kind == LinearSolveKind.SOLVED:
     print(solved.variable, solved.value)  # x 4
 ```
+
+`schema_version` is included in every serializer payload and should be used as the client compatibility key.
 
 Linear equation solving returns typed outcomes for solved, no-solution, and
 infinite-solution cases (`SolvedLinearEquation`, `NoLinearSolution`,

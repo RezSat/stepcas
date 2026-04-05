@@ -2,6 +2,7 @@ from .differentiate import differentiate
 from .errors import DifferentiationError, LinearFormError, ParseError, RewriteError, StepcasError
 from .expression import Add, Equation, Expr, Mul, Number, Pow, Symbol
 from .linear_form import LinearForm, extract_linear_form
+from .json_trace import SCHEMA_VERSION, expr_to_json, step_to_json, trace_result_to_json
 from .parser import parse_expr
 from .simplify import simplify
 from .solve_linear import (
@@ -31,13 +32,17 @@ __all__ = [
     "Pow",
     "Step",
     "SolvedLinearEquation",
+    "SCHEMA_VERSION",
     "Symbol",
     "RewriteError",
     "StepcasError",
     "TraceResult",
     "differentiate",
+    "expr_to_json",
     "extract_linear_form",
     "parse_expr",
     "solve_linear_equation",
+    "step_to_json",
     "simplify",
+    "trace_result_to_json",
 ]

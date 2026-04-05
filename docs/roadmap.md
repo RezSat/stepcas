@@ -16,7 +16,7 @@
 - [x] Additive-only exact like-term collection (no expansion/factoring)
 - [ ] General like-term collection across transformed forms
 - [x] Linear equation solving
-- [ ] JSON trace export
+- [x] JSON trace export
 - [ ] Error taxonomy
 - [ ] Benchmarks
 
