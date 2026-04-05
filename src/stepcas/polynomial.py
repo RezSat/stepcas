@@ -15,6 +15,8 @@ NumberLike = int | float
 def polynomial_coefficients(expr: Expr, variable: str) -> dict[int, NumberLike]:
     """Return degree-to-coefficient mapping for a one-variable polynomial."""
 
+    _validate_polynomial_variable(variable)
+
     terms = expr.terms if isinstance(expr, Add) else (expr,)
     coefficients: dict[int, NumberLike] = {}
 
@@ -37,6 +39,23 @@ def polynomial_degree(expr: Expr, variable: str) -> int:
 
     coefficients = polynomial_coefficients(expr, variable)
     return max(coefficients)
+
+
+def polynomial_coeff_vector(expr: Expr, variable: str) -> list[NumberLike]:
+    """Return dense highest-degree-first coefficients for a one-variable polynomial."""
+
+    coefficients = polynomial_coefficients(expr, variable)
+    max_degree = max(coefficients)
+    return [coefficients.get(degree, 0) for degree in range(max_degree, -1, -1)]
+
+
+def _validate_polynomial_variable(variable: str) -> None:
+    if isinstance(variable, str) and variable and variable.isidentifier():
+        return
+    raise PolynomialError(
+        "Target variable must be a single symbol name",
+        code=POLYNOMIAL_UNSUPPORTED_SYMBOL,
+    )
 
 
 def _term_degree(term: Expr, variable: str) -> int:

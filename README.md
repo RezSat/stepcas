@@ -31,6 +31,7 @@ This starter implements:
 - additive-only exact like-term collection with explicit trace steps (`collect-like-terms-add`) without expansion/factoring,
 - one-variable polynomial degree utility (`polynomial_degree`) for already-expanded forms,
 - one-variable polynomial coefficient extraction (`polynomial_coefficients`) for already-expanded forms,
+- one-variable dense polynomial coefficient vectors (`polynomial_coeff_vector`) for already-expanded forms,
 - symbolic differentiation for a useful subset,
 - linear-form extraction for expressions in `a*x + b` form,
 - core linear equation solving API (`solve_linear_equation`) with step tracing,
@@ -39,6 +40,8 @@ This starter implements:
 - reproducible benchmark harness for simplify/differentiate/solve workloads with runtime and step-count output,
 - test suite,
 - repo scaffolding for agentic development.
+
+Polynomial utilities validate `variable` strictly: it must be a single symbol name (for example, `"x"`).
 
 ## Quick start
 
@@ -87,6 +90,7 @@ from stepcas import (
     differentiate,
     extract_linear_form,
     parse_expr,
+    polynomial_coeff_vector,
     polynomial_coefficients,
     polynomial_degree,
     simplify,
@@ -110,6 +114,9 @@ print(degree)  # 4
 
 coefficients = polynomial_coefficients(parse_expr("3*x**2 - 2*x + 5"), "x")
 print(coefficients)  # {2: 3, 1: -2, 0: 5}
+
+vector = polynomial_coeff_vector(parse_expr("3*x**4 - 2*x + 5"), "x")
+print(vector)  # [3, 0, 0, -2, 5]
 
 solved = solve_linear_equation(parse_expr("2*x + 3"), parse_expr("11"), "x")
 if solved.kind == LinearSolveKind.SOLVED:

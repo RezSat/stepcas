@@ -3,6 +3,7 @@ import pytest
 from stepcas import (
     Number,
     Symbol,
+    polynomial_coeff_vector,
     parse_expr,
     polynomial_coefficients,
     polynomial_degree,
@@ -93,5 +94,23 @@ def test_polynomial_coefficients_rejects_other_symbols() -> None:
     expr = simplify(parse_expr("x + y"))
     with pytest.raises(PolynomialError) as exc_info:
         polynomial_coefficients(expr, "x")
+
+    assert exc_info.value.code == POLYNOMIAL_UNSUPPORTED_SYMBOL
+
+
+def test_polynomial_coeff_vector_returns_dense_coefficients() -> None:
+    expr = simplify(parse_expr("3*x**4 - 2*x + 5"))
+    assert polynomial_coeff_vector(expr, "x") == [3, 0, 0, -2, 5]
+
+
+def test_polynomial_coeff_vector_zero_polynomial() -> None:
+    expr = simplify(parse_expr("x - x"))
+    assert polynomial_coeff_vector(expr, "x") == [0]
+
+
+def test_polynomial_coeff_vector_rejects_invalid_variable_name() -> None:
+    expr = simplify(parse_expr("x + 1"))
+    with pytest.raises(PolynomialError) as exc_info:
+        polynomial_coeff_vector(expr, "x+y")
 
     assert exc_info.value.code == POLYNOMIAL_UNSUPPORTED_SYMBOL
