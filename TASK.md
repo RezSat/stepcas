@@ -89,9 +89,11 @@ Repeat this loop continuously:
 2. choose the highest-priority unblocked task
 3. implement only one coherent slice
 4. run tests
-5. commit the slice
-6. create follow-up tasks using `.\scripts\add-task.ps1` when needed
+5. commit the slice (before ending the session, inspect current backlog and repository state)
+6. create follow-up tasks using `.\scripts\add-task.ps1`
 7. move to the next highest-value task
+
+Note: when you add a task like this, it will start that task as soon as the current one ends, that is how this is setup, but if all tasks were to be completed the system goes into sleep mode, do not let it sleep. Always from the start check what's need to fix, add, test features and even after a task end do these and add at least one task before ending the current task.
 
 ## Technical priorities
 
