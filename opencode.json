@@ -13,7 +13,9 @@
       "pytest*": "allow",
       "python -m pytest*": "allow",
       "ruff check*": "allow",
-      "python -m pip*": "allow"
+      "python -m pip*": "allow",
+      "git push": "allow",
+      "git commit": "allow",
     }
   },
   "compaction": {

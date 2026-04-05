@@ -1,12 +1,9 @@
 from __future__ import annotations
 
+from .errors import DIFFERENTIATE_NON_CONSTANT_EXPONENT, DifferentiationError
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
 from .simplify import simplify
 from .trace import Step, TraceResult
-
-
-class DifferentiationError(ValueError):
-    pass
 
 
 def differentiate(expr: Expr, variable: str, trace: bool = False) -> Expr | TraceResult:
@@ -22,7 +19,9 @@ def differentiate(expr: Expr, variable: str, trace: bool = False) -> Expr | Trac
 def _differentiate(expr: Expr, variable: str, steps: list[Step]) -> Expr:
     if isinstance(expr, Number):
         after = Number(0)
-        steps.append(Step("derivative-constant", expr, after, "The derivative of a constant is zero"))
+        steps.append(
+            Step("derivative-constant", expr, after, "The derivative of a constant is zero")
+        )
         return after
     if isinstance(expr, Symbol):
         after = Number(1 if expr.name == variable else 0)
@@ -50,7 +49,11 @@ def _differentiate(expr: Expr, variable: str, steps: list[Step]) -> Expr:
     if isinstance(expr, Pow):
         if isinstance(expr.exponent, Number):
             new_exponent = Number(expr.exponent.value - 1)
-            after = Mul(expr.exponent, Pow(expr.base, new_exponent), _differentiate(expr.base, variable, steps))
+            after = Mul(
+                expr.exponent,
+                Pow(expr.base, new_exponent),
+                _differentiate(expr.base, variable, steps),
+            )
             steps.append(
                 Step(
                     "derivative-power",
@@ -60,5 +63,8 @@ def _differentiate(expr: Expr, variable: str, steps: list[Step]) -> Expr:
                 )
             )
             return after
-        raise DifferentiationError("Only constant exponents are supported in this starter")
+        raise DifferentiationError(
+            "Only constant exponents are supported in this starter",
+            code=DIFFERENTIATE_NON_CONSTANT_EXPONENT,
+        )
     raise DifferentiationError(f"Unsupported expression for differentiation: {expr!r}")

@@ -84,7 +84,7 @@
     "title": "Error taxonomy baseline",
     "agent": "lead-engineer",
     "command": "/implement Introduce shared StepcasError hierarchy and stable error codes for parse/differentiate/rewrite domains while keeping backward-compatible behavior.",
-    "status": "queued",
+    "status": "done",
     "priority": 30,
     "branch": "feat/error-taxonomy",
     "notes": "depends_on: [T-012]; acceptance: typed error base with codes exists, ParseError and DifferentiationError integrate cleanly, CLI emits predictable user-facing error summary and non-zero exit for known domain errors."

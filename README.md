@@ -67,6 +67,10 @@ for step in result.steps:
     print(step.rule, step.before, "=>", step.after)
 ```
 
+Error handling is exposed through a shared hierarchy rooted at `StepcasError`,
+with domain-specific subclasses such as `ParseError`, `DifferentiationError`,
+and `RewriteError`. Each carries a stable machine-friendly `code` and `domain`.
+
 
 ## OpenCode workflow
 

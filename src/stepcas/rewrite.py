@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import Callable, List, Optional
 
+from .errors import REWRITE_INVALID_RULE_RESULT, RewriteError
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
 from .trace import Step
 
@@ -42,7 +43,17 @@ def _rewrite_once(
         result = rule_fn(expr)
         if result is None:
             continue
+        if not isinstance(result, tuple) or len(result) != 2:
+            raise RewriteError(
+                f"Rule '{rule_name}' must return (Expr, str) or None",
+                code=REWRITE_INVALID_RULE_RESULT,
+            )
         after, explanation = result
+        if not isinstance(after, Expr) or not isinstance(explanation, str):
+            raise RewriteError(
+                f"Rule '{rule_name}' returned invalid result types",
+                code=REWRITE_INVALID_RULE_RESULT,
+            )
         steps.append(Step(rule=rule_name, before=expr, after=after, explanation=explanation))
         return after, True
     return expr, rebuilt != expr

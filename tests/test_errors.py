@@ -1,0 +1,62 @@
+import pytest
+
+from stepcas import Expr, Number, Pow, Symbol, differentiate, parse_expr
+from stepcas.errors import (
+    DIFFERENTIATE_NON_CONSTANT_EXPONENT,
+    DIFFERENTIATE_UNSUPPORTED_EXPRESSION,
+    PARSE_SYNTAX_ERROR,
+    PARSE_UNSUPPORTED_SYNTAX,
+    REWRITE_INVALID_RULE_RESULT,
+    DifferentiationError,
+    ParseError,
+    RewriteError,
+    StepcasError,
+)
+from stepcas.rewrite import rewrite_fixpoint
+
+
+def test_parse_error_uses_shared_hierarchy_and_syntax_code() -> None:
+    with pytest.raises(ParseError) as exc_info:
+        parse_expr("(")
+
+    err = exc_info.value
+    assert isinstance(err, StepcasError)
+    assert isinstance(err, ValueError)
+    assert err.domain == "parse"
+    assert err.code == PARSE_SYNTAX_ERROR
+
+
+def test_parse_error_uses_stable_unsupported_syntax_code() -> None:
+    with pytest.raises(ParseError) as exc_info:
+        parse_expr("f(x)")
+
+    assert exc_info.value.code == PARSE_UNSUPPORTED_SYNTAX
+
+
+def test_differentiation_error_uses_shared_hierarchy_and_stable_code() -> None:
+    with pytest.raises(DifferentiationError) as exc_info:
+        differentiate(Pow(Symbol("x"), Symbol("y")), "x")
+
+    err = exc_info.value
+    assert isinstance(err, StepcasError)
+    assert isinstance(err, ValueError)
+    assert err.domain == "differentiate"
+    assert err.code == DIFFERENTIATE_NON_CONSTANT_EXPONENT
+
+
+def test_differentiation_error_code_for_unsupported_expression() -> None:
+    with pytest.raises(DifferentiationError) as exc_info:
+        differentiate(Expr(), "x")
+
+    assert exc_info.value.code == DIFFERENTIATE_UNSUPPORTED_EXPRESSION
+
+
+def test_rewrite_error_has_stable_code_for_invalid_rule_result_shape() -> None:
+    with pytest.raises(RewriteError) as exc_info:
+        rewrite_fixpoint(Number(1), [("bad-rule", lambda expr: Number(2))], [])
+
+    err = exc_info.value
+    assert isinstance(err, StepcasError)
+    assert isinstance(err, ValueError)
+    assert err.domain == "rewrite"
+    assert err.code == REWRITE_INVALID_RULE_RESULT

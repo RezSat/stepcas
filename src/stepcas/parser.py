@@ -2,11 +2,8 @@ from __future__ import annotations
 
 import ast
 
+from .errors import PARSE_SYNTAX_ERROR, ParseError
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
-
-
-class ParseError(ValueError):
-    pass
 
 
 _ALLOWED_BINOPS = (ast.Add, ast.Sub, ast.Mult, ast.Div, ast.Pow)
@@ -17,7 +14,7 @@ def parse_expr(source: str) -> Expr:
     try:
         node = ast.parse(source, mode="eval").body
     except SyntaxError as exc:
-        raise ParseError(str(exc)) from exc
+        raise ParseError(str(exc), code=PARSE_SYNTAX_ERROR) from exc
     return _convert(node)
 
 
