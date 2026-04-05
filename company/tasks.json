@@ -4,7 +4,7 @@
     "title": "Bootstrap planning backlog",
     "agent": "lead-engineer",
     "command": "/company-bootstrap Read AGENTS.md, program.md, docs/architecture.md, docs/roadmap.md, ADRs, current source, tests, and company state. Create a prioritized backlog in company/tasks.json with dependencies, clear acceptance criteria, and small human-like implementation slices. Then stop after planning and backlog generation only.",
-    "status": "running",
+    "status": "done",
     "priority": 1,
     "branch": "chore/bootstrap-planning",
     "notes": ""

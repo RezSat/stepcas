@@ -3,7 +3,7 @@
   "default_agent": "lead-engineer",
   "instructions": ["AGENTS.md", "program.md", "docs/architecture.md", "docs/roadmap.md"],
   "permission": {
-    "edit": "ask",
+    "edit": "allow",
     "bash": {
       "*": "ask",
       "git status*": "allow",
@@ -13,7 +13,7 @@
       "pytest*": "allow",
       "python -m pytest*": "allow",
       "ruff check*": "allow",
-      "python -m pip*": "ask"
+      "python -m pip*": "allow"
     }
   },
   "compaction": {
