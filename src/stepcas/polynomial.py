@@ -49,6 +49,14 @@ def polynomial_coeff_vector(expr: Expr, variable: str) -> list[NumberLike]:
     return [coefficients.get(degree, 0) for degree in range(max_degree, -1, -1)]
 
 
+def polynomial_leading_term(expr: Expr, variable: str) -> tuple[int, NumberLike]:
+    """Return (degree, coefficient) for the leading term of a one-variable polynomial."""
+
+    coefficients = polynomial_coefficients(expr, variable)
+    degree = max(coefficients)
+    return degree, coefficients[degree]
+
+
 def _validate_polynomial_variable(variable: str) -> None:
     if isinstance(variable, str) and variable and variable.isidentifier():
         return

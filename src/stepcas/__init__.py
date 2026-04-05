@@ -9,7 +9,12 @@ from .errors import (
 )
 from .expression import Add, Equation, Expr, Mul, Number, Pow, Symbol
 from .linear_form import LinearForm, extract_linear_form
-from .polynomial import polynomial_coeff_vector, polynomial_coefficients, polynomial_degree
+from .polynomial import (
+    polynomial_coeff_vector,
+    polynomial_coefficients,
+    polynomial_degree,
+    polynomial_leading_term,
+)
 from .json_trace import SCHEMA_VERSION, expr_to_json, step_to_json, trace_result_to_json
 from .parser import parse_expr
 from .simplify import simplify
@@ -53,6 +58,7 @@ __all__ = [
     "polynomial_coefficients",
     "polynomial_coeff_vector",
     "polynomial_degree",
+    "polynomial_leading_term",
     "solve_linear_equation",
     "step_to_json",
     "simplify",
