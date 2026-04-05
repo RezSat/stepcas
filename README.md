@@ -33,7 +33,7 @@ This starter implements:
 - linear-form extraction for expressions in `a*x + b` form,
 - core linear equation solving API (`solve_linear_equation`) with step tracing,
 - schema-versioned JSON serializers for `Expr`, `Step`, and `TraceResult` (`expr_to_json`, `step_to_json`, `trace_result_to_json`),
-- terminal interface,
+- CLI commands for `simplify`, `diff`, and `solve` with optional `--json` output and structured JSON errors (`error.code`, `error.message`),
 - test suite,
 - repo scaffolding for agentic development.
 
@@ -57,6 +57,23 @@ Differentiate an expression:
 ```bash
 stepcas diff "x**3 + 2*x + 5" x --steps
 ```
+
+Solve a linear equation (`lhs = rhs`):
+
+```bash
+stepcas solve "2*x + 3" "11" x
+```
+
+Get machine-readable JSON output from CLI commands:
+
+```bash
+stepcas simplify "x + 0 + 2 + 3" --steps --json
+stepcas diff "x**3 + 2*x + 5" x --json
+stepcas solve "2*x + 3" "11" x --steps --json
+```
+
+When `--json` is enabled and an operation fails, the CLI emits a structured
+error payload containing `error.code` and `error.message`.
 
 Use as a library:
 
