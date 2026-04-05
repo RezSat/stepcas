@@ -155,20 +155,33 @@ def _compose_add_term(coefficient: int | float, core: Expr) -> Expr:
     return Mul(Number(coefficient), core)
 
 
+def _positive_integer_number_value(number: Number) -> int | None:
+    value = number.value
+    if isinstance(value, int) and value >= 1:
+        return value
+    if isinstance(value, float) and value >= 1 and value.is_integer():
+        return int(value)
+    return None
+
+
 def _normalized_like_term_core(core: Expr) -> Expr:
+    if isinstance(core, Pow) and isinstance(core.exponent, Number):
+        exponent = _positive_integer_number_value(core.exponent)
+        if exponent is not None:
+            return Pow(core.base, Number(exponent))
+
     if not isinstance(core, Mul):
         return core
 
     exponent_by_base: dict[Expr, int] = {}
     for factor in core.factors:
-        if (
-            isinstance(factor, Pow)
-            and isinstance(factor.exponent, Number)
-            and isinstance(factor.exponent.value, int)
-            and factor.exponent.value >= 1
-        ):
+        if isinstance(factor, Pow) and isinstance(factor.exponent, Number):
+            exponent = _positive_integer_number_value(factor.exponent)
+        else:
+            exponent = None
+
+        if exponent is not None:
             base = factor.base
-            exponent = factor.exponent.value
         else:
             base = factor
             exponent = 1
@@ -338,16 +351,13 @@ def rule_merge_repeated_bases_mul(expr: Expr) -> Optional[tuple[Expr, str]]:
             untouched_factors.append(factor)
             continue
 
-        if (
-            isinstance(factor, Pow)
-            and isinstance(factor.exponent, Number)
-            and isinstance(factor.exponent.value, int)
-            and factor.exponent.value >= 1
-            and not isinstance(factor.base, Number)
-        ):
-            exponent_by_base[factor.base] = (
-                exponent_by_base.get(factor.base, 0) + factor.exponent.value
-            )
+        if isinstance(factor, Pow) and isinstance(factor.exponent, Number):
+            exponent = _positive_integer_number_value(factor.exponent)
+        else:
+            exponent = None
+
+        if exponent is not None and not isinstance(factor.base, Number):
+            exponent_by_base[factor.base] = exponent_by_base.get(factor.base, 0) + exponent
             continue
 
         if isinstance(factor, Pow):

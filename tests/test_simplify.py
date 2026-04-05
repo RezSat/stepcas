@@ -156,6 +156,15 @@ def test_collect_like_terms_matches_mixed_power_and_product_forms() -> None:
     )
 
 
+def test_collect_like_terms_matches_integral_float_and_integer_powers() -> None:
+    expr = Add(Pow(Symbol("x"), Number(2.0)), Pow(Symbol("x"), Number(2)))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Mul(Number(2), Pow(Symbol("x"), Number(2)))
+    assert_trace_rule_sequence(trace_result, ["collect-like-terms-add", "collapse-single-add"])
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
 def test_merge_repeated_bases_mul_simple_duplicate() -> None:
     expr = Mul(Symbol("x"), Symbol("x"))
 
@@ -201,4 +210,13 @@ def test_merge_repeated_bases_mul_skips_non_positive_exponents() -> None:
     trace_result = simplify(expr, trace=True)
     assert trace_result.expr == expr
     assert_trace_rule_sequence(trace_result, [])
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_merge_repeated_bases_mul_accepts_integral_float_exponents() -> None:
+    expr = Mul(Symbol("x"), Pow(Symbol("x"), Number(2.0)))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Pow(Symbol("x"), Number(3))
+    assert_trace_rule_sequence(trace_result, ["merge-repeated-bases-mul", "collapse-single-mul"])
     assert_trace_before_after_integrity(expr, trace_result)
