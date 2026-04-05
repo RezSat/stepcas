@@ -78,21 +78,43 @@ def run_task(task: Task) -> int:
         title,
         task.command,
     ]
+
     with log_path.open("a", encoding="utf-8") as log_file:
-        log_file.write(f"\n\n===== START {time.ctime()} =====\n")
-        log_file.write("COMMAND: " + " ".join(cmd) + "\n")
+        start_line = f"\n\n===== START {time.ctime()} =====\n"
+        command_line = "COMMAND: " + " ".join(cmd) + "\n"
+
+        print(start_line, end="")
+        print(command_line, end="")
+
+        log_file.write(start_line)
+        log_file.write(command_line)
         log_file.flush()
-        proc = subprocess.run(
+
+        proc = subprocess.Popen(
             cmd,
             cwd=ROOT,
-            stdout=log_file,
+            stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
             shell=False,
+            bufsize=1,
         )
-        log_file.write(f"===== END exit={proc.returncode} {time.ctime()} =====\n")
-        return proc.returncode
 
+        assert proc.stdout is not None
+
+        for line in proc.stdout:
+            print(line, end="")
+            log_file.write(line)
+            log_file.flush()
+
+        proc.wait()
+
+        end_line = f"===== END exit={proc.returncode} {time.ctime()} =====\n"
+        print(end_line, end="")
+        log_file.write(end_line)
+        log_file.flush()
+
+        return proc.returncode
 
 def main() -> int:
     print("StepCAS company runner started")
