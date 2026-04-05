@@ -6,6 +6,7 @@ description: Write small, human-looking commits for this repository
 Rules:
 - One concern per commit.
 - Commit after tests pass for that concern.
+- If Commits are left to do before begining a new task, then commit before the task starts and commit after a task is over, then push (git push)
 - Message format: imperative, specific, no hype.
 - Good examples:
   - add step trace model and result wrapper

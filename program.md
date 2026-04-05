@@ -17,7 +17,7 @@ Build a symbolic math engine that is:
 
 1. Every meaningful transformation should be representable as a machine-readable step.
 2. Simplicity before feature count.
-3. Small commits.
+3. Small commits. (Every thing must be commited and pushed)
 4. Every code change must leave behind evidence: tests, docs, ADR, benchmark note, or all of them.
 5. Do not build clever magic that cannot later explain itself.
 6. Optimize for architecture that can scale into a real CAS, not a hacky demo.
@@ -34,7 +34,7 @@ When making changes:
 6. Prefer adding or refining rules over ad hoc branching.
 7. Preserve immutable expression semantics.
 8. Never silently remove step information.
-9. Commit with small, specific messages.
+9. Commit everything with small, specific messages.
 10. Leave TODO notes only when paired with an issue or roadmap item.
 
 ## Target architecture
