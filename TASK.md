@@ -146,3 +146,5 @@ git push
 If `git push` fails, do your normal auth and push again.
 
 ---
+
+Do not even try reading `company/tasks.json` it will grow and it's just waste of tokens and memory to even to read it

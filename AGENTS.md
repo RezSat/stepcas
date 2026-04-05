@@ -83,6 +83,7 @@ When adding a rewrite, think about:
 - Use the project task creation script to add tasks.
 - Do not git-checkout, revert, or otherwise manipulate `company/tasks.json` directly.
 - Treat company queue/state files as supervisor-owned.
+- Do not even try reading `company/tasks.json` it will grow and it's just waste of tokens and memory to even to read it
 
 ## Preferred agent responsibilities
 

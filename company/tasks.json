@@ -174,7 +174,7 @@
     "title": "Read TASK.md and continue autonomous development",
     "agent": "build",
     "command": "Read TASK.md and all referenced project documents. Then continue autonomous StepCAS development by selecting the highest-priority unblocked work, implementing one coherent slice at a time, running tests, committing successful changes, and creating follow-up tasks only via .\\scripts\\add-task.ps1. Never manually edit company/tasks.json. Continue maintaining and improving the system under the rules in TASK.md.",
-    "status": "running",
+    "status": "done",
     "priority": 1,
     "branch": "feat/autonomous-handoff",
     "notes": ""
@@ -188,5 +188,15 @@
     "priority": 82,
     "branch": "feat/polynomial-coeff-vector",
     "notes": "depends_on: [HANDOFF-001]; acceptance: dense highest-degree-to-constant output, zero-fill missing degrees, non-polynomial forms raise typed PolynomialError."
+  },
+  {
+    "id": "T-083",
+    "title": "Multiply power-merge rewrite",
+    "agent": "lead-engineer",
+    "command": "/implement Add a mul-level rewrite that merges repeated bases into integer powers (x*x**2 -> x**3) with explicit trace steps and regression tests.",
+    "status": "done",
+    "priority": 83,
+    "branch": "feat/mul-power-merge",
+    "notes": ""
   }
 ]
