@@ -1,6 +1,13 @@
 import pytest
 
-from stepcas import Number, Symbol, parse_expr, polynomial_degree, simplify
+from stepcas import (
+    Number,
+    Symbol,
+    parse_expr,
+    polynomial_coefficients,
+    polynomial_degree,
+    simplify,
+)
 from stepcas.errors import (
     POLYNOMIAL_NON_POLYNOMIAL_FORM,
     POLYNOMIAL_UNSUPPORTED_STRUCTURE,
@@ -57,3 +64,34 @@ def test_polynomial_degree_rejects_unexpanded_structure() -> None:
         polynomial_degree(expr, "x")
 
     assert exc_info.value.code == POLYNOMIAL_UNSUPPORTED_STRUCTURE
+
+
+def test_polynomial_coefficients_collect_like_powers() -> None:
+    expr = simplify(parse_expr("3*x**4 + 2*x - 5*x + 7"))
+    assert polynomial_coefficients(expr, "x") == {4: 3, 1: -3, 0: 7}
+
+
+def test_polynomial_coefficients_multiplied_symbol_factors() -> None:
+    expr = simplify(parse_expr("2*x*x"))
+    assert polynomial_coefficients(expr, "x") == {2: 2}
+
+
+def test_polynomial_coefficients_zero_polynomial() -> None:
+    expr = simplify(parse_expr("x - x"))
+    assert polynomial_coefficients(expr, "x") == {0: 0}
+
+
+def test_polynomial_coefficients_rejects_non_polynomial_power() -> None:
+    expr = simplify(parse_expr("x**-1"))
+    with pytest.raises(PolynomialError) as exc_info:
+        polynomial_coefficients(expr, "x")
+
+    assert exc_info.value.code == POLYNOMIAL_NON_POLYNOMIAL_FORM
+
+
+def test_polynomial_coefficients_rejects_other_symbols() -> None:
+    expr = simplify(parse_expr("x + y"))
+    with pytest.raises(PolynomialError) as exc_info:
+        polynomial_coefficients(expr, "x")
+
+    assert exc_info.value.code == POLYNOMIAL_UNSUPPORTED_SYMBOL
