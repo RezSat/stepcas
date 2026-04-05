@@ -155,6 +155,38 @@ def _compose_add_term(coefficient: int | float, core: Expr) -> Expr:
     return Mul(Number(coefficient), core)
 
 
+def _normalized_like_term_core(core: Expr) -> Expr:
+    if not isinstance(core, Mul):
+        return core
+
+    exponent_by_base: dict[Expr, int] = {}
+    for factor in core.factors:
+        if (
+            isinstance(factor, Pow)
+            and isinstance(factor.exponent, Number)
+            and isinstance(factor.exponent.value, int)
+            and factor.exponent.value >= 1
+        ):
+            base = factor.base
+            exponent = factor.exponent.value
+        else:
+            base = factor
+            exponent = 1
+        exponent_by_base[base] = exponent_by_base.get(base, 0) + exponent
+
+    normalized_factors = []
+    for base in sorted(exponent_by_base, key=expr_sort_key):
+        exponent = exponent_by_base[base]
+        if exponent == 1:
+            normalized_factors.append(base)
+        else:
+            normalized_factors.append(Pow(base, Number(exponent)))
+
+    if len(normalized_factors) == 1:
+        return normalized_factors[0]
+    return Mul(*normalized_factors)
+
+
 def rule_collect_like_terms_add(expr: Expr) -> Optional[tuple[Expr, str]]:
     if not isinstance(expr, Add):
         return None
@@ -168,6 +200,7 @@ def rule_collect_like_terms_add(expr: Expr) -> Optional[tuple[Expr, str]]:
         if core is None:
             constants.append(term)
             continue
+        core = _normalized_like_term_core(core)
         symbolic_term_count += 1
         if core not in coefficient_by_core:
             coefficient_by_core[core] = 0

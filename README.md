@@ -28,7 +28,7 @@ This starter implements:
 - parser for a Python-like math subset,
 - simplification with step tracing,
 - canonical ordering for addition and multiplication with explicit trace steps (`canonical-order-add` and `canonical-order-mul`),
-- additive-only exact like-term collection with explicit trace steps (`collect-like-terms-add`) without expansion/factoring,
+- additive-only like-term collection with explicit trace steps (`collect-like-terms-add`) across equivalent product/power forms (for example `x*x` and `x**2`) without expansion/factoring,
 - one-variable polynomial degree utility (`polynomial_degree`) for already-expanded forms,
 - one-variable polynomial coefficient extraction (`polynomial_coefficients`) for already-expanded forms,
 - one-variable dense polynomial coefficient vectors (`polynomial_coeff_vector`) for already-expanded forms,

@@ -123,3 +123,28 @@ def test_collect_like_terms_preserves_canonical_add_order() -> None:
         ["collect-like-terms-add", "canonical-order-add"],
     )
     assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_collect_like_terms_matches_repeated_mul_with_power() -> None:
+    expr = Add(Mul(Symbol("x"), Symbol("x")), Pow(Symbol("x"), Number(2)))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Mul(Number(2), Pow(Symbol("x"), Number(2)))
+    assert_trace_rule_sequence(trace_result, ["collect-like-terms-add", "collapse-single-add"])
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_collect_like_terms_matches_mixed_power_and_product_forms() -> None:
+    expr = Add(
+        Mul(Number(2), Symbol("x"), Symbol("x")),
+        Mul(Number(3), Pow(Symbol("x"), Number(2))),
+        Symbol("y"),
+    )
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Add(Symbol("y"), Mul(Number(5), Pow(Symbol("x"), Number(2))))
+    assert_trace_rule_sequence(
+        trace_result,
+        ["collect-like-terms-add", "canonical-order-add"],
+    )
+    assert_trace_before_after_integrity(expr, trace_result)
