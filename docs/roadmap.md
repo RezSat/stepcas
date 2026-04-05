@@ -18,7 +18,7 @@
 - [x] Linear equation solving
 - [x] JSON trace export
 - [ ] Error taxonomy
-- [ ] Benchmarks
+- [x] Benchmarks
 
 ## Milestone 2
 

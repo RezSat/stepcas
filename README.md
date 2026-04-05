@@ -34,6 +34,7 @@ This starter implements:
 - core linear equation solving API (`solve_linear_equation`) with step tracing,
 - schema-versioned JSON serializers for `Expr`, `Step`, and `TraceResult` (`expr_to_json`, `step_to_json`, `trace_result_to_json`),
 - CLI commands for `simplify`, `diff`, and `solve` with optional `--json` output and structured JSON errors (`error.code`, `error.message`),
+- reproducible benchmark harness for simplify/differentiate/solve workloads with runtime and step-count output,
 - test suite,
 - repo scaffolding for agentic development.
 
@@ -143,6 +144,22 @@ The long-term design is four layers:
 4. **Frontends**: Python API, CLI, web API, UI
 
 See `docs/architecture.md` and `program.md`.
+
+## Benchmarks
+
+Run the benchmark harness:
+
+```bash
+stepcas-benchmark
+```
+
+Record a baseline snapshot:
+
+```bash
+stepcas-benchmark --iterations 50 --warmups 10 --baseline-out benchmarks/baseline.json
+```
+
+See `docs/benchmarks.md` for usage and reproducibility guidance.
 
 ## Autonomous company mode
 

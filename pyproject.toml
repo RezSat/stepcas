@@ -33,6 +33,7 @@ dev = [
 
 [project.scripts]
 stepcas = "stepcas.cli:main"
+stepcas-benchmark = "stepcas.benchmark:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
