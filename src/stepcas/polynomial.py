@@ -69,6 +69,14 @@ def polynomial_trailing_coefficient(expr: Expr, variable: str) -> NumberLike:
     return polynomial_coefficients(expr, variable).get(0, 0)
 
 
+def polynomial_trailing_term(expr: Expr, variable: str) -> tuple[int, NumberLike]:
+    """Return (degree, coefficient) for the lowest-degree term of a polynomial."""
+
+    coefficients = polynomial_coefficients(expr, variable)
+    degree = min(coefficients)
+    return degree, coefficients[degree]
+
+
 def _validate_polynomial_variable(variable: str) -> None:
     if isinstance(variable, str) and variable and variable.isidentifier():
         return
