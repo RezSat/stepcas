@@ -15,7 +15,7 @@
 - [x] Canonical ordering
 - [x] Additive-only exact like-term collection (no expansion/factoring)
 - [ ] General like-term collection across transformed forms
-- [ ] Linear equation solving
+- [x] Linear equation solving
 - [ ] JSON trace export
 - [ ] Error taxonomy
 - [ ] Benchmarks

@@ -31,6 +31,7 @@ This starter implements:
 - additive-only exact like-term collection with explicit trace steps (`collect-like-terms-add`) without expansion/factoring,
 - symbolic differentiation for a useful subset,
 - linear-form extraction for expressions in `a*x + b` form,
+- core linear equation solving API (`solve_linear_equation`) with step tracing,
 - terminal interface,
 - test suite,
 - repo scaffolding for agentic development.
@@ -59,7 +60,14 @@ stepcas diff "x**3 + 2*x + 5" x --steps
 Use as a library:
 
 ```python
-from stepcas import differentiate, extract_linear_form, parse_expr, simplify
+from stepcas import (
+    LinearSolveKind,
+    differentiate,
+    extract_linear_form,
+    parse_expr,
+    simplify,
+    solve_linear_equation,
+)
 
 expr = parse_expr("x**3 + 2*x + 5")
 result = differentiate(expr, "x", trace=True)
@@ -69,7 +77,15 @@ for step in result.steps:
 
 linear = extract_linear_form(parse_expr("3*x - 7"), "x")
 print(linear.coefficient, linear.constant)  # 3 -7
+
+solved = solve_linear_equation(parse_expr("2*x + 3"), parse_expr("11"), "x")
+if solved.kind == LinearSolveKind.SOLVED:
+    print(solved.variable, solved.value)  # x 4
 ```
+
+Linear equation solving returns typed outcomes for solved, no-solution, and
+infinite-solution cases (`SolvedLinearEquation`, `NoLinearSolution`,
+`InfiniteLinearSolutions`) tagged by `LinearSolveKind`.
 
 Error handling is exposed through a shared hierarchy rooted at `StepcasError`,
 with domain-specific subclasses such as `ParseError`, `DifferentiationError`,

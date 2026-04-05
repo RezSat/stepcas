@@ -68,6 +68,18 @@ class Pow(Expr):
         return f"{_maybe_parenthesize(self.base, self)}**{_maybe_parenthesize(self.exponent, self)}"
 
 
+@dataclass(frozen=True)
+class Equation(Expr):
+    lhs: Expr
+    rhs: Expr
+
+    def children(self) -> Tuple[Expr, ...]:
+        return (self.lhs, self.rhs)
+
+    def __str__(self) -> str:
+        return f"{self.lhs} = {self.rhs}"
+
+
 def _maybe_parenthesize(expr: Expr, parent: Expr) -> str:
     if isinstance(parent, Add):
         return str(expr)
