@@ -12,3 +12,4 @@ Rules:
 - add or update tests
 - run focused verification first
 - summarize what changed and any follow-up work
+- commit and push

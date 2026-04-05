@@ -94,7 +94,7 @@
     "title": "Linear form extractor (single variable)",
     "agent": "lead-engineer",
     "command": "/design-rule Implement helper extracting ax+b from simplified expressions for one variable, with typed rejection for non-linear forms.",
-    "status": "queued",
+    "status": "done",
     "priority": 40,
     "branch": "feat/linear-form-extractor",
     "notes": "depends_on: [T-023, T-030]; acceptance: extracts numeric a/b for linear forms, rejects x^2/x*y/1/x with typed solve-domain errors, tests include positive/negative coefficients and variable-absent cases."
@@ -104,7 +104,7 @@
     "title": "solve_linear API with step trace",
     "agent": "lead-engineer",
     "command": "/implement Add core linear solve API for lhs=rhs with explicit isolate/divide steps and typed handling of no-solution/infinite-solution/zero-coefficient cases.",
-    "status": "queued",
+    "status": "running",
     "priority": 41,
     "branch": "feat/linear-solve-api",
     "notes": "depends_on: [T-040]; acceptance: solves representative linear equations, emits ordered solver steps, degenerate cases handled with typed outcomes, unit tests cover success and failure paths."
