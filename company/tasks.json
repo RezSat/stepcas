@@ -104,7 +104,7 @@
     "title": "solve_linear API with step trace",
     "agent": "lead-engineer",
     "command": "/implement Add core linear solve API for lhs=rhs with explicit isolate/divide steps and typed handling of no-solution/infinite-solution/zero-coefficient cases.",
-    "status": "running",
+    "status": "done",
     "priority": 41,
     "branch": "feat/linear-solve-api",
     "notes": "depends_on: [T-040]; acceptance: solves representative linear equations, emits ordered solver steps, degenerate cases handled with typed outcomes, unit tests cover success and failure paths."
@@ -114,7 +114,7 @@
     "title": "CLI solve command",
     "agent": "lead-engineer",
     "command": "/implement Expose solve command in CLI with optional --steps output using the same Step objects/rule names as the solve API.",
-    "status": "queued",
+    "status": "done",
     "priority": 42,
     "branch": "feat/cli-solve",
     "notes": "depends_on: [T-041]; acceptance: CLI solve works for at least one success and one failure case, --steps prints numbered rule trace, smoke tests added."
@@ -124,7 +124,7 @@
     "title": "Versioned JSON trace serializer",
     "agent": "lead-engineer",
     "command": "/implement Add schema-versioned JSON serializer for Expr/Step/TraceResult with stable node kinds and typed fields suitable for API/UI clients.",
-    "status": "queued",
+    "status": "done",
     "priority": 50,
     "branch": "feat/json-trace-serializer",
     "notes": "depends_on: [T-030]; acceptance: payload includes schema_version, final expr, and structured steps; no reliance on pretty-print strings; serializer tests lock schema shape."
@@ -134,7 +134,7 @@
     "title": "CLI --json mode for simplify/diff/solve",
     "agent": "lead-engineer",
     "command": "/implement Add --json output option for simplify, diff, and solve commands, including structured error payloads with code/message.",
-    "status": "queued",
+    "status": "done",
     "priority": 51,
     "branch": "feat/cli-json-output",
     "notes": "depends_on: [T-042, T-050]; acceptance: each command emits valid JSON in normal and trace modes, errors are structured, existing human-readable default output remains unchanged."
@@ -144,7 +144,7 @@
     "title": "Benchmark harness baseline",
     "agent": "lead-engineer",
     "command": "/benchmark Add reproducible benchmark harness for simplify/differentiate/solve workloads with runtime and step-count output plus baseline recording docs.",
-    "status": "queued",
+    "status": "done",
     "priority": 60,
     "branch": "chore/benchmark-baseline",
     "notes": "depends_on: [T-051]; acceptance: benchmark entrypoint added, representative corpus included, output captures runtime+step counts, docs explain how to run and compare baselines."
@@ -154,9 +154,19 @@
     "title": "Roadmap and ADR sync after Milestone 1 slices",
     "agent": "lead-engineer",
     "command": "/docs-sync Update roadmap and add ADR notes for canonicalization, solve scope boundaries, JSON trace schema contract, and error taxonomy decisions.",
-    "status": "queued",
+    "status": "done",
     "priority": 70,
     "branch": "docs/m1-contract-sync",
     "notes": "depends_on: [T-051, T-060]; acceptance: docs reflect delivered behavior and scope boundaries, ADR updates record major decisions, no stale milestone language remains."
+  },
+  {
+    "id": "BOOT-002",
+    "title": "Execute first milestone",
+    "agent": "lead-engineer",
+    "command": "/execute-milestone After BOOT-001 finishes, pick the highest-priority unblocked milestone and implement only the first smallest safe slice. Write tests, run tests, update docs, and commit once the slice passes. Do not overbuild. Stop after one coherent slice.",
+    "status": "done",
+    "priority": 2,
+    "branch": "feat/first-milestone-slice",
+    "notes": "Implemented first Milestone 2 slice: added univariate polynomial_degree utility with typed polynomial errors, tests, and docs updates."
   }
 ]

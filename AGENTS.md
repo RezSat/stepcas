@@ -79,6 +79,10 @@ When adding a rewrite, think about:
 - no nested `opencode` invocations from inside OpenCode itself
 - Never modify files under `company/logs/`.
 - Do not interfere with supervisor-owned runtime files.
+- Never manually edit, append to, or rewrite `company/tasks.json`.
+- Use the project task creation script to add tasks.
+- Do not git-checkout, revert, or otherwise manipulate `company/tasks.json` directly.
+- Treat company queue/state files as supervisor-owned.
 
 ## Preferred agent responsibilities
 
