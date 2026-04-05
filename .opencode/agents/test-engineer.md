@@ -2,7 +2,7 @@
 description: Expands tests, edge cases, and regression coverage
 mode: subagent
 permission:
-  edit: ask
+  edit: allow
   webfetch: deny
   bash:
     "*": ask

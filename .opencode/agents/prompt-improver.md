@@ -2,7 +2,7 @@
 description: Improves program.md, skills, and agent prompts based on repository friction
 mode: subagent
 permission:
-  edit: ask
+  edit: allow
   webfetch: deny
   bash:
     "*": ask

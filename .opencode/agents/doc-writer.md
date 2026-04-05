@@ -2,7 +2,7 @@
 description: Maintains docs, ADRs, and change notes for the symbolic engine
 mode: subagent
 permission:
-  edit: ask
+  edit: allow
   webfetch: deny
   bash:
     "*": ask

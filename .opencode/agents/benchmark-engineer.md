@@ -2,7 +2,7 @@
 description: Measures performance and scalability bottlenecks without changing semantics
 mode: subagent
 permission:
-  edit: ask
+  edit: allow
   webfetch: deny
   bash:
     "*": ask
