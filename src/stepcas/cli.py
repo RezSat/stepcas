@@ -41,3 +41,7 @@ def _print_steps(steps: Iterable[Step]) -> None:
         print(f"{index}. [{step.rule}] {step.before} -> {step.after}")
         if step.explanation:
             print(f"   {step.explanation}")
+
+
+if __name__ == "__main__":
+    main()
