@@ -91,3 +91,7 @@ The long-term design is four layers:
 4. **Frontends**: Python API, CLI, web API, UI
 
 See `docs/architecture.md` and `program.md`.
+
+## Autonomous company mode
+
+This repo also includes a lightweight local supervisor under `company/` and helper scripts under `scripts/`. Use that mode if you want StepCAS work to proceed task by task with minimal intervention, while still being easy to pause and resume.

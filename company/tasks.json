@@ -1,0 +1,22 @@
+[
+  {
+    "id": "T-001",
+    "title": "Plan canonical ordering for Add and Mul",
+    "agent": "lead-engineer",
+    "command": "/plan-feature canonical ordering for Add and Mul",
+    "status": "running",
+    "priority": 1,
+    "branch": "feat/canonical-ordering",
+    "notes": "Plan only"
+  },
+  {
+    "id": "T-002",
+    "title": "Implement canonical ordering for Add and Mul",
+    "agent": "lead-engineer",
+    "command": "/implement-feature implement canonical ordering for Add and Mul, add focused tests, run pytest",
+    "status": "queued",
+    "priority": 2,
+    "branch": "feat/canonical-ordering",
+    "notes": "Run after T-001 looks good"
+  }
+]

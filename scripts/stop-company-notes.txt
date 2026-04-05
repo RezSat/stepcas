@@ -1,0 +1,3 @@
+Close the two PowerShell windows opened by start-company.ps1.
+That stops the OpenCode server and the StepCAS company runner.
+To resume later, run scripts/start-company.ps1 again.
