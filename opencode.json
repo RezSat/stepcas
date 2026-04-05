@@ -5,7 +5,7 @@
   "permission": {
     "edit": "allow",
     "bash": {
-      "*": "ask",
+      "*": "allow",
       "git status*": "allow",
       "git diff*": "allow",
       "git log*": "allow",
@@ -38,13 +38,17 @@
       "temperature": 0.1,
       "permission": {
         "task": {
-          "*": "deny",
+          "*": "allow",
+          "bash": "allow",
           "math-architect": "allow",
           "test-engineer": "allow",
           "benchmark-engineer": "allow",
           "debug-engineer": "allow",
           "doc-writer": "allow",
-          "prompt-improver": "allow"
+          "prompt-improver": "allow",
+          "edit": "allow",
+          "write": "allow",
+          "patch": "allow"
         }
       }
     }

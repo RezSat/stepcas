@@ -5,7 +5,7 @@ permission:
   edit: allow
   webfetch: deny
   bash:
-    "*": ask
+    "*": allow
     "git diff": allow
     "grep *": allow
 ---

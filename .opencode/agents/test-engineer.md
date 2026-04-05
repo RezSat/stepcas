@@ -5,7 +5,7 @@ permission:
   edit: allow
   webfetch: deny
   bash:
-    "*": ask
+    "*": allow
     "pytest*": allow
     "python -m pytest*": allow
     "git diff": allow

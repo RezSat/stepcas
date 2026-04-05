@@ -7,6 +7,156 @@
     "status": "done",
     "priority": 1,
     "branch": "chore/bootstrap-planning",
-    "notes": ""
+    "notes": "Backlog generated below; keep this task as runner-owned lifecycle entry."
+  },
+  {
+    "id": "T-010",
+    "title": "Parser precedence and rejection regression pack",
+    "agent": "test-engineer",
+    "command": "/test-gap Add parser regression tests for precedence/associativity and unsupported syntax rejection (calls, floor-div, malformed input). Keep patch test-only.",
+    "status": "done",
+    "priority": 10,
+    "branch": "tests/parser-regressions",
+    "notes": "depends_on: []; acceptance: parse precedence cases pass, right-assoc power covered, unsupported AST forms raise ParseError, malformed input raises ParseError."
+  },
+  {
+    "id": "T-011",
+    "title": "Simplify edge-case regression around power identities",
+    "agent": "test-engineer",
+    "command": "/test-gap Add simplify regression tests for identity edge cases, especially 0-power corner behavior and nested flatten/fold fixpoint behavior.",
+    "status": "done",
+    "priority": 11,
+    "branch": "tests/simplify-edge-cases",
+    "notes": "depends_on: [T-010]; acceptance: additive/multiplicative identity edges covered, nested flatten+fold regression added, explicit invariant test for 0**0 and 0**-1 behavior captured."
+  },
+  {
+    "id": "T-012",
+    "title": "Trace invariant test helpers",
+    "agent": "test-engineer",
+    "command": "/test-gap Introduce reusable test helpers for step traces (rule sequence and before/after integrity) and adopt in simplify+differentiate tests.",
+    "status": "queued",
+    "priority": 12,
+    "branch": "tests/trace-invariants",
+    "notes": "depends_on: [T-011]; acceptance: helper assertions exist, at least one simplify and one differentiate trace test use them, no production behavior change."
+  },
+  {
+    "id": "T-020",
+    "title": "Deterministic expression sort key utility",
+    "agent": "math-architect",
+    "command": "/design-rule Define a stable total order utility for Expr nodes (Number/Symbol/Pow/Mul/Add) to support canonicalization without leaking policy across rules.",
+    "status": "queued",
+    "priority": 20,
+    "branch": "feat/canonical-sort-key",
+    "notes": "depends_on: [T-012]; acceptance: single reusable sort-key utility with recursive tie-breaks, deterministic sort behavior proven by tests, no rewrite behavior change yet."
+  },
+  {
+    "id": "T-021",
+    "title": "Canonical ordering rewrite rules for Add and Mul",
+    "agent": "lead-engineer",
+    "command": "/implement canonical-order-add and canonical-order-mul rewrite rules using the shared sort key; ensure explicit trace steps and idempotent simplify output.",
+    "status": "queued",
+    "priority": 21,
+    "branch": "feat/canonical-ordering",
+    "notes": "depends_on: [T-020]; acceptance: reordered Add/Mul normalize consistently, trace emits canonical-order rule names, simplify is idempotent on second pass, existing tests pass."
+  },
+  {
+    "id": "T-022",
+    "title": "Additive term decomposition helper",
+    "agent": "math-architect",
+    "command": "/design-rule Add a small helper that decomposes additive terms into (numeric coefficient, symbolic core) for x, -x, 3*x, and canonical products.",
+    "status": "queued",
+    "priority": 22,
+    "branch": "feat/term-decomposition",
+    "notes": "depends_on: [T-021]; acceptance: decomposition handles constants/signed terms/products predictably, preserves immutability, and has dedicated unit coverage."
+  },
+  {
+    "id": "T-023",
+    "title": "Collect like terms rewrite",
+    "agent": "lead-engineer",
+    "command": "/implement collect-like-terms rewrite for additive groups only (no expansion/factoring). Emit explicit step and preserve canonical ordering.",
+    "status": "queued",
+    "priority": 23,
+    "branch": "feat/like-term-collection",
+    "notes": "depends_on: [T-022]; acceptance: x+x->2*x and 2*x+3*x->5*x pass, unlike terms remain separate, cancellation reaches zero via existing rules, trace includes collect-like-terms."
+  },
+  {
+    "id": "T-030",
+    "title": "Error taxonomy baseline",
+    "agent": "lead-engineer",
+    "command": "/implement Introduce shared StepcasError hierarchy and stable error codes for parse/differentiate/rewrite domains while keeping backward-compatible behavior.",
+    "status": "queued",
+    "priority": 30,
+    "branch": "feat/error-taxonomy",
+    "notes": "depends_on: [T-012]; acceptance: typed error base with codes exists, ParseError and DifferentiationError integrate cleanly, CLI emits predictable user-facing error summary and non-zero exit for known domain errors."
+  },
+  {
+    "id": "T-040",
+    "title": "Linear form extractor (single variable)",
+    "agent": "math-architect",
+    "command": "/design-rule Implement helper extracting ax+b from simplified expressions for one variable, with typed rejection for non-linear forms.",
+    "status": "queued",
+    "priority": 40,
+    "branch": "feat/linear-form-extractor",
+    "notes": "depends_on: [T-023, T-030]; acceptance: extracts numeric a/b for linear forms, rejects x^2/x*y/1/x with typed solve-domain errors, tests include positive/negative coefficients and variable-absent cases."
+  },
+  {
+    "id": "T-041",
+    "title": "solve_linear API with step trace",
+    "agent": "lead-engineer",
+    "command": "/implement Add core linear solve API for lhs=rhs with explicit isolate/divide steps and typed handling of no-solution/infinite-solution/zero-coefficient cases.",
+    "status": "queued",
+    "priority": 41,
+    "branch": "feat/linear-solve-api",
+    "notes": "depends_on: [T-040]; acceptance: solves representative linear equations, emits ordered solver steps, degenerate cases handled with typed outcomes, unit tests cover success and failure paths."
+  },
+  {
+    "id": "T-042",
+    "title": "CLI solve command",
+    "agent": "lead-engineer",
+    "command": "/implement Expose solve command in CLI with optional --steps output using the same Step objects/rule names as the solve API.",
+    "status": "queued",
+    "priority": 42,
+    "branch": "feat/cli-solve",
+    "notes": "depends_on: [T-041]; acceptance: CLI solve works for at least one success and one failure case, --steps prints numbered rule trace, smoke tests added."
+  },
+  {
+    "id": "T-050",
+    "title": "Versioned JSON trace serializer",
+    "agent": "lead-engineer",
+    "command": "/implement Add schema-versioned JSON serializer for Expr/Step/TraceResult with stable node kinds and typed fields suitable for API/UI clients.",
+    "status": "queued",
+    "priority": 50,
+    "branch": "feat/json-trace-serializer",
+    "notes": "depends_on: [T-030]; acceptance: payload includes schema_version, final expr, and structured steps; no reliance on pretty-print strings; serializer tests lock schema shape."
+  },
+  {
+    "id": "T-051",
+    "title": "CLI --json mode for simplify/diff/solve",
+    "agent": "lead-engineer",
+    "command": "/implement Add --json output option for simplify, diff, and solve commands, including structured error payloads with code/message.",
+    "status": "queued",
+    "priority": 51,
+    "branch": "feat/cli-json-output",
+    "notes": "depends_on: [T-042, T-050]; acceptance: each command emits valid JSON in normal and trace modes, errors are structured, existing human-readable default output remains unchanged."
+  },
+  {
+    "id": "T-060",
+    "title": "Benchmark harness baseline",
+    "agent": "benchmark-engineer",
+    "command": "/benchmark Add reproducible benchmark harness for simplify/differentiate/solve workloads with runtime and step-count output plus baseline recording docs.",
+    "status": "queued",
+    "priority": 60,
+    "branch": "chore/benchmark-baseline",
+    "notes": "depends_on: [T-051]; acceptance: benchmark entrypoint added, representative corpus included, output captures runtime+step counts, docs explain how to run and compare baselines."
+  },
+  {
+    "id": "T-070",
+    "title": "Roadmap and ADR sync after Milestone 1 slices",
+    "agent": "doc-writer",
+    "command": "/docs-sync Update roadmap and add ADR notes for canonicalization, solve scope boundaries, JSON trace schema contract, and error taxonomy decisions.",
+    "status": "queued",
+    "priority": 70,
+    "branch": "docs/m1-contract-sync",
+    "notes": "depends_on: [T-051, T-060]; acceptance: docs reflect delivered behavior and scope boundaries, ADR updates record major decisions, no stale milestone language remains."
   }
 ]

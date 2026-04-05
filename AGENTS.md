@@ -29,10 +29,10 @@ Before making changes, read these files in order:
 4. Keep the expression model immutable.
 5. Add or update tests with every behavior change.
 6. Run focused tests first, then the full test suite when the change is ready.
-7. Do not add dependencies unless the human explicitly approves.
+7. Do not add dependencies unless the human explicitly approves. (Exceptions are if they won't break anything in the system wide,, then no approval needed just install add and use them)
 8. Do not rewrite unrelated code while solving a targeted task.
 9. Keep docs in sync when public behavior or architecture changes.
-10. Commit in small, human-looking commits.
+10. Commit in small, human-looking commits. (Always try to commit, before begining any new task, make sure there are no staged commits, if there are then make sure to commit them and then push them to the remote before even touching the new task. Once a task is finished and suitable to commit then commit and push. - Look for Commit Styles at the last section)
 
 ## Session workflow
 
@@ -77,6 +77,8 @@ When adding a rewrite, think about:
 - no hidden behavior changes without tests
 - no replacing symbolic logic with LLM guesses
 - no nested `opencode` invocations from inside OpenCode itself
+- Never modify files under `company/logs/`.
+- Do not interfere with supervisor-owned runtime files.
 
 ## Preferred agent responsibilities
 
@@ -89,6 +91,7 @@ When adding a rewrite, think about:
 - `prompt-improver`: improve agent prompts, command templates, and workflow docs
 
 ## Commit style
+Always try to commit, before begining any new task, make sure there are no staged commits, if there are then make sure to commit them and then push them to the remote before even touching the new task. Once a task is finished and suitable to commit then commit and push.
 
 Use small commits such as:
 - `parser: reject malformed unary chains`
