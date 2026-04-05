@@ -77,3 +77,6 @@ A task is only done when:
 - docs reflect the change,
 - commit message is precise,
 - the system remains simpler or more coherent than before.
+
+
+Read TASK.md

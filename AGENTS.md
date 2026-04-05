@@ -103,3 +103,5 @@ Use small commits such as:
 - `diff: simplify constant-factor products`
 - `tests: cover cli diff steps output`
 - `docs: clarify rewrite trace contract`
+
+Read TASK.md
