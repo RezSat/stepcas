@@ -32,7 +32,7 @@ Before making changes, read these files in order:
 7. Do not add dependencies unless the human explicitly approves. (Exceptions are if they won't break anything in the system wide,, then no approval needed just install add and use them)
 8. Do not rewrite unrelated code while solving a targeted task.
 9. Keep docs in sync when public behavior or architecture changes.
-10. Commit in small, human-looking commits. (Always try to commit, before begining any new task, make sure there are no staged commits, if there are then make sure to commit them and then push them to the remote before even touching the new task. Once a task is finished and suitable to commit then commit and push. - Look for Commit Styles at the last section)
+10. Commit in small, human-looking commits. (Always try to commit, before begining any new task, make sure to commit them and then push them to the remote before even touching the new task. Once a task is finished and suitable to commit then commit and push. - Look for Commit Styles at the last section)
 
 ## Session workflow
 

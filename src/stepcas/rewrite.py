@@ -2,10 +2,24 @@ from __future__ import annotations
 
 from typing import Callable, List, Optional
 
-from .expression import Add, Expr, Mul, Number, Pow
+from .expression import Add, Expr, Mul, Number, Pow, Symbol
 from .trace import Step
 
 RuleFn = Callable[[Expr], Optional[tuple[Expr, str]]]
+
+
+def expr_sort_key(expr: Expr) -> tuple:
+    if isinstance(expr, Number):
+        return (0, expr.value)
+    if isinstance(expr, Symbol):
+        return (1, expr.name)
+    if isinstance(expr, Pow):
+        return (2, expr_sort_key(expr.base), expr_sort_key(expr.exponent))
+    if isinstance(expr, Mul):
+        return (3, tuple(expr_sort_key(factor) for factor in expr.factors))
+    if isinstance(expr, Add):
+        return (4, tuple(expr_sort_key(term) for term in expr.terms))
+    return (99, repr(expr))
 
 
 def rewrite_fixpoint(expr: Expr, rules: List[tuple[str, RuleFn]], steps: List[Step]) -> Expr:
@@ -18,7 +32,9 @@ def rewrite_fixpoint(expr: Expr, rules: List[tuple[str, RuleFn]], steps: List[St
     return current
 
 
-def _rewrite_once(expr: Expr, rules: List[tuple[str, RuleFn]], steps: List[Step]) -> tuple[Expr, bool]:
+def _rewrite_once(
+    expr: Expr, rules: List[tuple[str, RuleFn]], steps: List[Step]
+) -> tuple[Expr, bool]:
     rebuilt = _rewrite_children(expr, rules, steps)
     if rebuilt != expr:
         expr = rebuilt
@@ -99,6 +115,75 @@ def rule_fold_add_constants(expr: Expr) -> Optional[tuple[Expr, str]]:
     return Add(*others), "Fold additive constants"
 
 
+def _decompose_add_term(term: Expr) -> tuple[int | float, Expr | None]:
+    if isinstance(term, Number):
+        return term.value, None
+    if not isinstance(term, Mul):
+        return 1, term
+
+    coefficient = 1
+    non_numeric_factors = []
+    for factor in term.factors:
+        if isinstance(factor, Number):
+            coefficient *= factor.value
+        else:
+            non_numeric_factors.append(factor)
+
+    if not non_numeric_factors:
+        return coefficient, None
+    if len(non_numeric_factors) == 1:
+        return coefficient, non_numeric_factors[0]
+    return coefficient, Mul(*non_numeric_factors)
+
+
+def _compose_add_term(coefficient: int | float, core: Expr) -> Expr:
+    if coefficient == 1:
+        return core
+    if coefficient == -1:
+        return Mul(Number(-1), core)
+    return Mul(Number(coefficient), core)
+
+
+def rule_collect_like_terms_add(expr: Expr) -> Optional[tuple[Expr, str]]:
+    if not isinstance(expr, Add):
+        return None
+
+    constants = []
+    coefficient_by_core: dict[Expr, int | float] = {}
+    core_order = []
+    symbolic_term_count = 0
+    for term in expr.terms:
+        coefficient, core = _decompose_add_term(term)
+        if core is None:
+            constants.append(term)
+            continue
+        symbolic_term_count += 1
+        if core not in coefficient_by_core:
+            coefficient_by_core[core] = 0
+            core_order.append(core)
+        coefficient_by_core[core] += coefficient
+
+    if symbolic_term_count == len(core_order) and all(
+        coefficient_by_core[core] == 1 for core in core_order
+    ):
+        return None
+
+    rebuilt_terms = list(constants)
+    for core in core_order:
+        total_coefficient = coefficient_by_core[core]
+        if total_coefficient == 0:
+            continue
+        rebuilt_terms.append(_compose_add_term(total_coefficient, core))
+
+    if not rebuilt_terms:
+        return Number(0), "Collect exact like terms in addition"
+
+    rebuilt = Add(*rebuilt_terms)
+    if rebuilt == expr:
+        return None
+    return rebuilt, "Collect exact like terms in addition"
+
+
 def rule_fold_mul_constants(expr: Expr) -> Optional[tuple[Expr, str]]:
     if not isinstance(expr, Mul):
         return None
@@ -138,7 +223,9 @@ def rule_remove_add_zero(expr: Expr) -> Optional[tuple[Expr, str]]:
 def rule_remove_mul_one(expr: Expr) -> Optional[tuple[Expr, str]]:
     if not isinstance(expr, Mul):
         return None
-    filtered = [factor for factor in expr.factors if not (isinstance(factor, Number) and factor.value == 1)]
+    filtered = [
+        factor for factor in expr.factors if not (isinstance(factor, Number) and factor.value == 1)
+    ]
     if len(filtered) == len(expr.factors):
         return None
     if not filtered:
@@ -178,6 +265,24 @@ def rule_collapse_single_mul(expr: Expr) -> Optional[tuple[Expr, str]]:
     return expr.factors[0], "Collapse single-factor multiplication"
 
 
+def rule_canonical_order_add(expr: Expr) -> Optional[tuple[Expr, str]]:
+    if not isinstance(expr, Add):
+        return None
+    ordered_terms = tuple(sorted(expr.terms, key=expr_sort_key))
+    if ordered_terms == expr.terms:
+        return None
+    return Add(*ordered_terms), "Canonicalize addition term order"
+
+
+def rule_canonical_order_mul(expr: Expr) -> Optional[tuple[Expr, str]]:
+    if not isinstance(expr, Mul):
+        return None
+    ordered_factors = tuple(sorted(expr.factors, key=expr_sort_key))
+    if ordered_factors == expr.factors:
+        return None
+    return Mul(*ordered_factors), "Canonicalize multiplication factor order"
+
+
 DEFAULT_RULES: List[tuple[str, RuleFn]] = [
     ("flatten-add", rule_flatten_add),
     ("flatten-mul", rule_flatten_mul),
@@ -185,6 +290,9 @@ DEFAULT_RULES: List[tuple[str, RuleFn]] = [
     ("fold-mul-constants", rule_fold_mul_constants),
     ("remove-add-zero", rule_remove_add_zero),
     ("remove-mul-one", rule_remove_mul_one),
+    ("canonical-order-mul", rule_canonical_order_mul),
+    ("collect-like-terms-add", rule_collect_like_terms_add),
+    ("canonical-order-add", rule_canonical_order_add),
     ("collapse-single-add", rule_collapse_single_add),
     ("collapse-single-mul", rule_collapse_single_mul),
     ("pow-identities", rule_pow_identities),

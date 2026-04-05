@@ -9,4 +9,4 @@ def test_cli_simplify_steps() -> None:
         text=True,
         check=True,
     )
-    assert "result: x + 5" in completed.stdout
+    assert "result: 5 + x" in completed.stdout

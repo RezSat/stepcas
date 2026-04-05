@@ -44,7 +44,7 @@
     "title": "Deterministic expression sort key utility",
     "agent": "lead-engineer",
     "command": "/design-rule Define a stable total order utility for Expr nodes (Number/Symbol/Pow/Mul/Add) to support canonicalization without leaking policy across rules.",
-    "status": "queued",
+    "status": "done",
     "priority": 20,
     "branch": "feat/canonical-sort-key",
     "notes": "depends_on: [T-012]; acceptance: single reusable sort-key utility with recursive tie-breaks, deterministic sort behavior proven by tests, no rewrite behavior change yet."
@@ -54,7 +54,7 @@
     "title": "Canonical ordering rewrite rules for Add and Mul",
     "agent": "lead-engineer",
     "command": "/implement canonical-order-add and canonical-order-mul rewrite rules using the shared sort key; ensure explicit trace steps and idempotent simplify output.",
-    "status": "queued",
+    "status": "done",
     "priority": 21,
     "branch": "feat/canonical-ordering",
     "notes": "depends_on: [T-020]; acceptance: reordered Add/Mul normalize consistently, trace emits canonical-order rule names, simplify is idempotent on second pass, existing tests pass."
@@ -64,7 +64,7 @@
     "title": "Additive term decomposition helper",
     "agent": "lead-engineer",
     "command": "/design-rule Add a small helper that decomposes additive terms into (numeric coefficient, symbolic core) for x, -x, 3*x, and canonical products.",
-    "status": "queued",
+    "status": "done",
     "priority": 22,
     "branch": "feat/term-decomposition",
     "notes": "depends_on: [T-021]; acceptance: decomposition handles constants/signed terms/products predictably, preserves immutability, and has dedicated unit coverage."
@@ -74,7 +74,7 @@
     "title": "Collect like terms rewrite",
     "agent": "lead-engineer",
     "command": "/implement collect-like-terms rewrite for additive groups only (no expansion/factoring). Emit explicit step and preserve canonical ordering.",
-    "status": "queued",
+    "status": "done",
     "priority": 23,
     "branch": "feat/like-term-collection",
     "notes": "depends_on: [T-022]; acceptance: x+x->2*x and 2*x+3*x->5*x pass, unlike terms remain separate, cancellation reaches zero via existing rules, trace includes collect-like-terms."

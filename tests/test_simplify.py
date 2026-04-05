@@ -17,7 +17,7 @@ def test_simplify_trace_rule_sequence_and_integrity() -> None:
 
 
 def test_fold_constants() -> None:
-    assert simplify(Add(Number(2), Number(3), Symbol("x"))) == Add(Symbol("x"), Number(5))
+    assert simplify(Add(Number(2), Number(3), Symbol("x"))) == Add(Number(5), Symbol("x"))
 
 
 def test_multiplication_by_zero() -> None:
@@ -59,3 +59,67 @@ def test_nested_mul_flatten_and_fold_reaches_stable_fixpoint() -> None:
     assert trace_result.expr == Mul(Number(24), Symbol("x"))
     assert_trace_rule_sequence(trace_result, [])
     assert_trace_before_after_integrity(simplified, trace_result)
+
+
+def test_canonical_order_add_emits_explicit_trace_step() -> None:
+    expr = Add(Symbol("y"), Number(2), Symbol("x"))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Add(Number(2), Symbol("x"), Symbol("y"))
+    assert_trace_rule_sequence(trace_result, ["canonical-order-add"])
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_canonical_order_mul_emits_explicit_trace_step() -> None:
+    expr = Mul(Symbol("y"), Number(2), Symbol("x"))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Mul(Number(2), Symbol("x"), Symbol("y"))
+    assert_trace_rule_sequence(trace_result, ["canonical-order-mul"])
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_canonical_order_output_is_idempotent() -> None:
+    expr = Add(Symbol("z"), Number(1), Symbol("a"))
+    simplified = simplify(expr)
+
+    assert simplified == Add(Number(1), Symbol("a"), Symbol("z"))
+
+    trace_result = simplify(simplified, trace=True)
+    assert trace_result.expr == simplified
+    assert_trace_rule_sequence(trace_result, [])
+    assert_trace_before_after_integrity(simplified, trace_result)
+
+
+def test_collect_like_terms_simple_duplicate() -> None:
+    assert simplify(Add(Symbol("x"), Symbol("x"))) == Mul(Number(2), Symbol("x"))
+
+
+def test_collect_like_terms_with_coefficients_emits_explicit_step() -> None:
+    expr = Add(Mul(Number(2), Symbol("x")), Mul(Number(3), Symbol("x")))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Mul(Number(5), Symbol("x"))
+    assert_trace_rule_sequence(trace_result, ["collect-like-terms-add", "collapse-single-add"])
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_collect_like_terms_cancellation_reaches_zero() -> None:
+    expr = Add(Symbol("x"), Mul(Number(-1), Symbol("x")))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Number(0)
+    assert_trace_rule_sequence(trace_result, ["collect-like-terms-add"])
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_collect_like_terms_preserves_canonical_add_order() -> None:
+    expr = Add(Symbol("x"), Symbol("y"), Symbol("x"))
+
+    trace_result = simplify(expr, trace=True)
+    assert trace_result.expr == Add(Symbol("y"), Mul(Number(2), Symbol("x")))
+    assert_trace_rule_sequence(
+        trace_result,
+        ["collect-like-terms-add", "canonical-order-add"],
+    )
+    assert_trace_before_after_integrity(expr, trace_result)

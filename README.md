@@ -27,6 +27,8 @@ This starter implements:
 - immutable expression tree,
 - parser for a Python-like math subset,
 - simplification with step tracing,
+- canonical ordering for addition and multiplication with explicit trace steps (`canonical-order-add` and `canonical-order-mul`),
+- additive-only exact like-term collection with explicit trace steps (`collect-like-terms-add`) without expansion/factoring,
 - symbolic differentiation for a useful subset,
 - terminal interface,
 - test suite,

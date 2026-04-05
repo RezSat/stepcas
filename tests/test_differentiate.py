@@ -49,6 +49,6 @@ def test_differentiate_constant_trace_rule_sequence_and_integrity() -> None:
 
 def test_differentiate_sum() -> None:
     assert differentiate(Add(Pow(Symbol("x"), Number(2)), Mul(Number(2), Symbol("x"))), "x") == Add(
-        Mul(Number(2), Symbol("x")),
         Number(2),
+        Mul(Number(2), Symbol("x")),
     )
