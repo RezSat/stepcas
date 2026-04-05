@@ -29,7 +29,7 @@
 
 ## Milestone 2
 
-- [ ] Polynomial domain utilities
+- [ ] Polynomial domain utilities (started: univariate `polynomial_degree` utility)
 - [ ] Factoring
 - [ ] Expansion
 - [ ] Assumption system

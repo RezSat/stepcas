@@ -29,6 +29,7 @@ This starter implements:
 - simplification with step tracing,
 - canonical ordering for addition and multiplication with explicit trace steps (`canonical-order-add` and `canonical-order-mul`),
 - additive-only exact like-term collection with explicit trace steps (`collect-like-terms-add`) without expansion/factoring,
+- one-variable polynomial degree utility (`polynomial_degree`) for already-expanded forms,
 - symbolic differentiation for a useful subset,
 - linear-form extraction for expressions in `a*x + b` form,
 - core linear equation solving API (`solve_linear_equation`) with step tracing,
@@ -85,6 +86,7 @@ from stepcas import (
     differentiate,
     extract_linear_form,
     parse_expr,
+    polynomial_degree,
     simplify,
     solve_linear_equation,
 )
@@ -100,6 +102,9 @@ print(trace_payload["schema_version"], trace_payload["object"])
 
 linear = extract_linear_form(parse_expr("3*x - 7"), "x")
 print(linear.coefficient, linear.constant)  # 3 -7
+
+degree = polynomial_degree(parse_expr("3*x**4 + 2*x - 1"), "x")
+print(degree)  # 4
 
 solved = solve_linear_equation(parse_expr("2*x + 3"), parse_expr("11"), "x")
 if solved.kind == LinearSolveKind.SOLVED:
