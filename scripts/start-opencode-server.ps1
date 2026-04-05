@@ -1,5 +1,5 @@
 param(
-  [int]$Port = 4096
+  [int]$Port = 4027
 )
 
 $env:OPENCODE_SERVER_PASSWORD = if ($env:OPENCODE_SERVER_PASSWORD) { $env:OPENCODE_SERVER_PASSWORD } else { "stepcas-local" }

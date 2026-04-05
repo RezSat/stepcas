@@ -1,22 +1,12 @@
 [
   {
-    "id": "T-001",
-    "title": "Plan canonical ordering for Add and Mul",
+    "id": "BOOT-001",
+    "title": "Bootstrap planning backlog",
     "agent": "lead-engineer",
-    "command": "/plan-feature canonical ordering for Add and Mul",
+    "command": "/company-bootstrap Read AGENTS.md, program.md, docs/architecture.md, docs/roadmap.md, ADRs, current source, tests, and company state. Create a prioritized backlog in company/tasks.json with dependencies, clear acceptance criteria, and small human-like implementation slices. Then stop after planning and backlog generation only.",
     "status": "running",
     "priority": 1,
-    "branch": "feat/canonical-ordering",
-    "notes": "Plan only"
-  },
-  {
-    "id": "T-002",
-    "title": "Implement canonical ordering for Add and Mul",
-    "agent": "lead-engineer",
-    "command": "/implement-feature implement canonical ordering for Add and Mul, add focused tests, run pytest",
-    "status": "queued",
-    "priority": 2,
-    "branch": "feat/canonical-ordering",
-    "notes": "Run after T-001 looks good"
+    "branch": "chore/bootstrap-planning",
+    "notes": ""
   }
 ]
