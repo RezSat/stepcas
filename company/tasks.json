@@ -248,5 +248,215 @@
         "priority":  2,
         "branch":  "main",
         "notes":  ""
+    },
+    {
+        "id":  "PM-AUTO",
+        "title":  "Maintain backlog health automatically",
+        "agent":  "project-manager",
+        "command":  "Read TASK.md, AGENTS.md, program.md, docs, source, tests, recent completed tasks, and current backlog. If backlog is low, empty, too repetitive, or missing strategic coverage, add a balanced set of small implementation, bugfix, test, docs, cleanup, and architecture tasks using .\\scripts\\add-task.ps1. Never manually edit company/tasks.json.",
+        "status":  "done",
+        "priority":  1,
+        "branch":  "chore/backlog-health-auto",
+        "notes":  ""
+    },
+    {
+        "id":  "ARCH-AUTO",
+        "title":  "Review architecture and add strategic tasks automatically",
+        "agent":  "chief-architect",
+        "command":  "Inspect the full StepCAS repository, architecture docs, roadmap, source, tests, and recent progress. Identify missing capabilities, fragile design, neglected subsystems, and strategic next steps. Add small actionable tasks using .\\scripts\\add-task.ps1. Never manually edit company/tasks.json.",
+        "status":  "running",
+        "priority":  2,
+        "branch":  "chore/architecture-review-auto",
+        "notes":  ""
+    },
+    {
+        "id":  "PM-20260406-109",
+        "title":  "Validate target variable names across core APIs",
+        "agent":  "debug-engineer",
+        "command":  "Add shared target-variable validation for differentiate, extract_linear_form, and solve_linear_equation; reject invalid identifiers with stable error codes and add regression tests.",
+        "status":  "queued",
+        "priority":  6,
+        "branch":  "fix/variable-name-validation",
+        "notes":  ""
+    },
+    {
+        "id":  "PM-20260406-110",
+        "title":  "Expand solve and CLI JSON failure regression coverage",
+        "agent":  "test-engineer",
+        "command":  "Add focused tests for solve_linear_equation and CLI --json error payloads covering nonlinear, unsupported symbol, and malformed input cases with stable code assertions.",
+        "status":  "queued",
+        "priority":  7,
+        "branch":  "tests/solve-cli-json-failures",
+        "notes":  ""
+    },
+    {
+        "id":  "PM-20260406-111",
+        "title":  "Add polynomial numeric evaluation utility slice",
+        "agent":  "lead-engineer",
+        "command":  "Implement a small univariate polynomial_evaluate utility for expanded forms, expose it in __init__, and add tests/docs for integer and float evaluation paths plus unsupported-structure errors.",
+        "status":  "queued",
+        "priority":  8,
+        "branch":  "feat/polynomial-evaluate",
+        "notes":  ""
+    },
+    {
+        "id":  "PM-20260406-112",
+        "title":  "Define API/web readiness response matrix",
+        "agent":  "chief-architect",
+        "command":  "Write a short architecture note mapping simplify/diff/solve success and failure payload contracts into web endpoint response shapes, including schema-versioning and error-code requirements.",
+        "status":  "queued",
+        "priority":  9,
+        "branch":  "docs/api-response-matrix",
+        "notes":  ""
+    },
+    {
+        "id":  "PM-20260406-113",
+        "title":  "Document variable and expanded-form preconditions",
+        "agent":  "doc-writer",
+        "command":  "Update README and docs to clearly state variable-name validation rules and expanded-form prerequisites for linear and polynomial helpers, with concise examples.",
+        "status":  "queued",
+        "priority":  10,
+        "branch":  "docs/preconditions-clarity",
+        "notes":  ""
+    },
+    {
+        "id":  "PM-20260406-114",
+        "title":  "Add benchmark baseline schema regression tests",
+        "agent":  "benchmark-engineer",
+        "command":  "Add tests for benchmark baseline payload stability (schema_version, settings, case keys) and step_count invariants for default cases under fixed iterations.",
+        "status":  "queued",
+        "priority":  11,
+        "branch":  "tests/benchmark-baseline-contract",
+        "notes":  ""
+    },
+    {
+        "id":  "PM-20260406-115",
+        "title":  "Refactor duplicate equation-to-linear setup paths",
+        "agent":  "lead-engineer",
+        "command":  "Perform a cleanup pass to centralize lhs/rhs linear-form extraction and isolate-step construction in solve_linear without changing behavior; keep trace output identical and prove with tests.",
+        "status":  "queued",
+        "priority":  12,
+        "branch":  "refactor/solve-linear-setup",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-01",
+        "title":  "Add rewrite fixpoint guardrails for termination and trace size",
+        "agent":  "lead-engineer",
+        "command":  "Implement configurable iteration and step guards in rewrite_fixpoint, raise a structured rewrite error when limits are exceeded, and add tests for non-terminating rule sets.",
+        "status":  "queued",
+        "priority":  10,
+        "branch":  "feat/rewrite-guardrails",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-02",
+        "title":  "Standardize variable-name validation across public APIs",
+        "agent":  "lead-engineer",
+        "command":  "Create one shared variable-name validator and apply it in differentiate, solve_linear_equation, and polynomial helpers with consistent error codes and tests.",
+        "status":  "queued",
+        "priority":  18,
+        "branch":  "feat/variable-validation",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-03",
+        "title":  "Reduce product-rule trace blowup by pruning zero derivative factors",
+        "agent":  "math-architect",
+        "command":  "Optimize derivative-product construction to skip terms where d(factor)=0 while preserving mathematically correct traces, then add regression tests on mixed constant-symbol products.",
+        "status":  "queued",
+        "priority":  22,
+        "branch":  "perf/diff-product-pruning",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-04",
+        "title":  "Extract shared symbol-scanning helpers for linear and polynomial domains",
+        "agent":  "lead-engineer",
+        "command":  "Refactor duplicated contains-variable and contains-other-symbol logic into shared internal utilities used by linear_form and polynomial modules, keeping behavior unchanged and tests passing.",
+        "status":  "queued",
+        "priority":  30,
+        "branch":  "refactor/shared-symbol-scans",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-05",
+        "title":  "Introduce minimal distributive expansion rule with explicit trace step",
+        "agent":  "math-architect",
+        "command":  "Add a narrow expand rule for c*(a+b) and (a+b)*c only, integrate it as an opt-in algorithm path, and add trace-focused tests without broad rewrite expansion.",
+        "status":  "queued",
+        "priority":  35,
+        "branch":  "feat/minimal-expand-rule",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-06",
+        "title":  "Add solver preprocessing pipeline and trace stitching",
+        "agent":  "lead-engineer",
+        "command":  "Make solve_linear_equation optionally simplify both sides before extraction, preserve solve steps plus preprocess steps in a coherent trace, and document exact scope boundaries.",
+        "status":  "queued",
+        "priority":  40,
+        "branch":  "feat/solve-preprocess-trace",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-07",
+        "title":  "Define step metadata conventions for explainability pipeline",
+        "agent":  "chief-architect",
+        "command":  "Write an ADR defining stable step metadata keys such as phase and visibility, then add minimal enforcement tests for JSON-serializable metadata compatibility.",
+        "status":  "queued",
+        "priority":  45,
+        "branch":  "docs/adr-step-metadata-contract",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-08",
+        "title":  "Add CLI polynomial inspect command",
+        "agent":  "lead-engineer",
+        "command":  "Add a CLI subcommand to expose polynomial degree and coefficient utilities in JSON and text modes with structured errors and tests.",
+        "status":  "queued",
+        "priority":  50,
+        "branch":  "feat/cli-polynomial",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-09",
+        "title":  "Add benchmark baseline comparison mode",
+        "agent":  "benchmark-engineer",
+        "command":  "Extend benchmark CLI with compare-against-baseline support and threshold-based regression detection for runtime and step-count metrics, plus tests and docs updates.",
+        "status":  "queued",
+        "priority":  55,
+        "branch":  "feat/benchmark-compare",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-10",
+        "title":  "Strengthen parser robustness with generative malformed-input tests",
+        "agent":  "test-engineer",
+        "command":  "Add deterministic malformed-expression corpus and light fuzz-style parser tests to validate stable ParseError codes and avoid uncaught exceptions.",
+        "status":  "queued",
+        "priority":  60,
+        "branch":  "tests/parser-robustness",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-11",
+        "title":  "Draft API surface for future web service integration",
+        "agent":  "doc-writer",
+        "command":  "Create docs/api-design.md describing planned HTTP endpoints, request-response contracts, error envelopes, and trace payload reuse strategy for a future web API.",
+        "status":  "queued",
+        "priority":  65,
+        "branch":  "docs/api-design-v1",
+        "notes":  ""
+    },
+    {
+        "id":  "CA-20260406-12",
+        "title":  "Plan package split toward target architecture namespaces",
+        "agent":  "chief-architect",
+        "command":  "Produce a phased migration plan from current module layout to core/rules/rewrite/algorithms/frontends/explain packages with compatibility and test strategy.",
+        "status":  "queued",
+        "priority":  70,
+        "branch":  "arch/package-split-plan",
+        "notes":  ""
     }
 ]
