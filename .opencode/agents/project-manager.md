@@ -2,7 +2,6 @@
 name: project-manager
 description: Maintains backlog health, detects missing work, prevents queue starvation, and adds new tasks safely.
 mode: primary
-model: gpt-5.3-codex
 tools:
   bash: true
   edit: true

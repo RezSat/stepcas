@@ -2,7 +2,6 @@
 name: chief-architect
 description: Reviews the whole system architecture, detects missing capabilities, and creates strategic tasks.
 mode: primary
-model: gpt-5.3-codex
 tools:
   bash: true
   edit: true
