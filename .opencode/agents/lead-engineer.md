@@ -20,3 +20,5 @@ Do not optimize prematurely.
 Do not let context bloat. Prefer one coherent task per session.
 
 Always try to commit, before begining any new task, make sure to commit them and then push them to the remote before even touching the new task. Once a task is finished and suitable to commit then commit and push. - Look for Commit Styles at the last section (AGENTS.md)
+
+- Do not even try reading `company/tasks.json` it will grow and it's just waste of tokens and memory to even to read it

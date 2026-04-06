@@ -78,7 +78,7 @@ def run_task(task: Task) -> int:
         "--title",
         title,
         task.command,
-        "Commit and Push every change, look for last in AGENTS.md for commit styles and skills/commit-style/SKILL.md as well. Check the TASK.md ## Development loop before ending the current task, DO NOT COMMIT BEFORE ADDING THE TEXT TASK, for that read TASK.md for how to add the next task."
+        "Commit and Push every change, look for last in AGENTS.md for commit styles and skills/commit-style/SKILL.md as well."
     ]
 
     # Run through cmd because manual cmd execution works on your machine

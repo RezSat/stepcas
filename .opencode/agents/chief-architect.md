@@ -29,3 +29,5 @@ Rules:
 - Identify gaps across parser, algebra core, canonicalization, solving, tracing, CLI, benchmarks, tests, docs, and future API design.
 
 Your output should lead to actionable tasks, not just analysis.
+
+- Do not even try reading `company/tasks.json` it will grow and it's just waste of tokens and memory to even to read it
