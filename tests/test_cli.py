@@ -102,3 +102,72 @@ def test_cli_diff_json_error_payload_contains_code_and_message() -> None:
     payload = json.loads(completed.stdout)
     assert payload["error"]["code"] == "differentiate.non_constant_exponent"
     assert "Only constant exponents" in payload["error"]["message"]
+
+
+def test_cli_solve_json_error_payload_for_nonlinear_input() -> None:
+    completed = run(
+        [
+            sys.executable,
+            "-m",
+            "stepcas.cli",
+            "solve",
+            "x**2",
+            "3",
+            "x",
+            "--json",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode != 0
+    payload = json.loads(completed.stdout)
+    assert payload["error"]["code"] == "linear.nonlinear_form"
+    assert payload["error"]["message"]
+
+
+def test_cli_solve_json_error_payload_for_unsupported_symbol_input() -> None:
+    completed = run(
+        [
+            sys.executable,
+            "-m",
+            "stepcas.cli",
+            "solve",
+            "x + y",
+            "3",
+            "x",
+            "--json",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode != 0
+    payload = json.loads(completed.stdout)
+    assert payload["error"]["code"] == "linear.unsupported_symbol"
+    assert payload["error"]["message"]
+
+
+def test_cli_solve_json_error_payload_for_malformed_input() -> None:
+    completed = run(
+        [
+            sys.executable,
+            "-m",
+            "stepcas.cli",
+            "solve",
+            "(",
+            "3",
+            "x",
+            "--json",
+        ],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert completed.returncode != 0
+    payload = json.loads(completed.stdout)
+    assert payload["error"]["code"] == "parse.syntax"
+    assert payload["error"]["message"]

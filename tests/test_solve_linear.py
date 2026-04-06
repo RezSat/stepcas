@@ -10,7 +10,7 @@ from stepcas import (
     simplify,
     solve_linear_equation,
 )
-from stepcas.errors import LINEAR_UNSUPPORTED_SYMBOL, LinearFormError
+from stepcas.errors import LINEAR_NONLINEAR_FORM, LINEAR_UNSUPPORTED_SYMBOL, LinearFormError
 
 
 def test_solve_linear_equation_returns_unique_solution() -> None:
@@ -112,19 +112,17 @@ def test_solve_linear_equation_divide_preserves_non_integer_quotient() -> None:
 
 
 def test_solve_linear_equation_rejects_non_linear_inputs() -> None:
-    try:
+    with pytest.raises(LinearFormError) as exc_info:
         solve_linear_equation(simplify(parse_expr("x**2")), simplify(parse_expr("3")), "x")
-    except LinearFormError:
-        return
-    raise AssertionError("Expected LinearFormError for nonlinear solve input")
+
+    assert exc_info.value.code == LINEAR_NONLINEAR_FORM
 
 
 def test_solve_linear_equation_rejects_unsupported_symbol_inputs() -> None:
-    try:
+    with pytest.raises(LinearFormError) as exc_info:
         solve_linear_equation(simplify(parse_expr("x + y")), simplify(parse_expr("3")), "x")
-    except LinearFormError:
-        return
-    raise AssertionError("Expected LinearFormError for unsupported symbol solve input")
+
+    assert exc_info.value.code == LINEAR_UNSUPPORTED_SYMBOL
 
 
 @pytest.mark.parametrize("invalid_variable", ["", "1x", "x+y", None, 1])
