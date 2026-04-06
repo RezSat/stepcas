@@ -81,6 +81,14 @@ Do not overbuild.
 Do not rewrite large areas without need.
 Prefer the smallest safe next slice.
 
+## Queue continuity rule
+
+The company must not leave the backlog empty unless the project is genuinely complete.
+
+If queued all actionable tasks have completed then a planning/governance agent must inspect the repository and add more tasks using `.\scripts\add-task.ps1`.
+
+Task generation must remain diversified across implementation, testing, docs, maintenance, architecture, and future capability work.
+
 ## Development loop
 
 Repeat this loop continuously:
@@ -124,27 +132,5 @@ That means:
 * no fake completion claims
 
 Continue operating autonomously until paused by the user.
-
-```
-
----
-
-### 2. Save the file
-
----
-
-### 3. Commit `TASK.md` manually yourself
-
-Run:
-
-```powershell
-git add TASK.md
-git commit -m "docs: add autonomous company handoff task"
-git push
-```
-
-If `git push` fails, do your normal auth and push again.
-
----
 
 Do not even try reading `company/tasks.json` it will grow and it's just waste of tokens and memory to even to read it

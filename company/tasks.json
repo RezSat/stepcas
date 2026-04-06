@@ -198,5 +198,55 @@
     "priority": 83,
     "branch": "feat/mul-power-merge",
     "notes": ""
+  },
+  {
+    "id": "T-20260406-001",
+    "title": "Expand polynomial domain utility coverage",
+    "agent": "lead-engineer",
+    "command": "Implement one polynomial utility slice by adding leading-term extraction for univariate expanded polynomials with tests and docs updates.",
+    "status": "done",
+    "priority": 20,
+    "branch": "main",
+    "notes": ""
+  },
+  {
+    "id": "T-POLY-LEADING-API-001",
+    "title": "Add polynomial leading-coefficient helper built on leading term",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_leading_coefficient(expr, variable) with tests and README update",
+    "status": "done",
+    "priority": 88,
+    "branch": "feat/polynomial-leading-coefficient",
+    "notes": ""
+  },
+  {
+    "id": "task-poly-trailing-coefficient",
+    "title": "Implement polynomial trailing-coefficient utility with tests",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_trailing_coefficient(expr, variable) with tests and README update",
+    "status": "done",
+    "priority": 2,
+    "branch": "feat/polynomial-trailing-coefficient",
+    "notes": ""
+  },
+  {
+    "id": "task-poly-trailing-term",
+    "title": "Implement polynomial_trailing_term utility",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_trailing_term(expr, variable) with tests and README update",
+    "status": "done",
+    "priority": 2,
+    "branch": "main",
+    "notes": ""
+  },
+  {
+    "id": "poly-lowest-degree-helper",
+    "title": "Implement polynomial_constant_term helper API",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_constant_term(expr, variable) alias and tests",
+    "status": "done",
+    "priority": 2,
+    "branch": "main",
+    "notes": ""
   }
 ]

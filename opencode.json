@@ -15,7 +15,7 @@
       "ruff check*": "allow",
       "python -m pip*": "allow",
       "git push": "allow",
-      "git commit": "allow",
+      "git commit": "allow"
     }
   },
   "compaction": {
@@ -48,6 +48,35 @@
           "debug-engineer": "allow",
           "doc-writer": "allow",
           "prompt-improver": "allow",
+          "edit": "allow",
+          "write": "allow",
+          "patch": "allow"
+        }
+      }
+    },
+    "project-manager": {
+      "description": "Keeps backlog healthy and adds new tasks when queue is low",
+      "mode": "primary",
+      "temperature": 0.1,
+      "permission": {
+        "task": {
+          "*": "allow",
+          "bash": "allow",
+          "edit": "allow",
+          "write": "allow",
+          "patch": "allow"
+        }
+      }
+    },
+    "chief-architect": {
+      "description": "Reviews system architecture and adds strategic tasks",
+      "mode": "primary",
+      "temperature": 0.1,
+      "permission": {
+        "task": {
+          "*": "allow",
+          "bash": "allow",
+          "math-architect": "allow",
           "edit": "allow",
           "write": "allow",
           "patch": "allow"

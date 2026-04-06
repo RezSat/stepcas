@@ -87,6 +87,8 @@ When adding a rewrite, think about:
 
 ## Preferred agent responsibilities
 
+- `project-manager`: backlog health, queue continuity, task generation, duplicate prevention, coverage balancing across subsystems
+- `chief-architect`: system-level architecture review, roadmap alignment, gap analysis, strategic milestone and design task generation
 - `lead-engineer`: orchestration, task decomposition, final decisions
 - `math-architect`: algebraic design, canonical forms, rewrite design
 - `test-engineer`: tests, regression checks, failure triage
@@ -94,6 +96,16 @@ When adding a rewrite, think about:
 - `debug-engineer`: bug isolation and reproduction
 - `doc-writer`: README, ADRs, roadmap, developer docs
 - `prompt-improver`: improve agent prompts, command templates, and workflow docs
+
+## Queue governance rules
+
+- `project-manager` is responsible for keeping the backlog non-empty and useful.
+- `chief-architect` is responsible for identifying neglected architecture and capability gaps.
+- Worker agents may add follow-up tasks, but queue continuity must not depend on worker agents alone.
+- Never manually edit `company/tasks.json`.
+- Always use `.\scripts\add-task.ps1` to add tasks.
+- If queued actionable tasks fall below 5, backlog-governance agents should add more tasks.
+- Avoid generating only one category of tasks repeatedly. Maintain balance across implementation, testing, debugging, documentation, maintenance, performance, and architecture.
 
 ## Commit style
 Always try to commit, before begining any new task, make sure there are no staged commits, if there are then make sure to commit them and then push them to the remote before even touching the new task. Once a task is finished and suitable to commit then commit and push.

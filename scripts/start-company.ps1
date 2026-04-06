@@ -17,4 +17,8 @@ Start-Sleep -Seconds 3
 Write-Host "Starting StepCAS company runner..."
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$root'; . .\.venv\Scripts\Activate.ps1; python .\company\runner.py"
 
+Start-Sleep -Seconds 2
+
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "Set-Location '$root'; .\.venv\Scripts\Activate.ps1; .\scripts\start-watchdog.ps1"
+
 Write-Host "Company started."
