@@ -12,6 +12,7 @@ PARSE_UNSUPPORTED_SYNTAX = "parse.unsupported_syntax"
 
 DIFFERENTIATE_NON_CONSTANT_EXPONENT = "differentiate.non_constant_exponent"
 DIFFERENTIATE_UNSUPPORTED_EXPRESSION = "differentiate.unsupported_expression"
+DIFFERENTIATE_UNSUPPORTED_SYMBOL = "differentiate.unsupported_symbol"
 
 REWRITE_INVALID_RULE_RESULT = "rewrite.invalid_rule_result"
 
@@ -71,6 +72,7 @@ __all__ = [
     "ERROR_DOMAIN_POLYNOMIAL",
     "DIFFERENTIATE_NON_CONSTANT_EXPONENT",
     "DIFFERENTIATE_UNSUPPORTED_EXPRESSION",
+    "DIFFERENTIATE_UNSUPPORTED_SYMBOL",
     "DifferentiationError",
     "ERROR_DOMAIN_DIFFERENTIATE",
     "ERROR_DOMAIN_PARSE",

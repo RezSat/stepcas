@@ -1,12 +1,22 @@
 from __future__ import annotations
 
-from .errors import DIFFERENTIATE_NON_CONSTANT_EXPONENT, DifferentiationError
+from .errors import (
+    DIFFERENTIATE_NON_CONSTANT_EXPONENT,
+    DIFFERENTIATE_UNSUPPORTED_SYMBOL,
+    DifferentiationError,
+)
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
 from .simplify import simplify
 from .trace import Step, TraceResult
+from .variable_validation import validate_target_variable
 
 
 def differentiate(expr: Expr, variable: str, trace: bool = False) -> Expr | TraceResult:
+    variable = validate_target_variable(
+        variable,
+        error_cls=DifferentiationError,
+        code=DIFFERENTIATE_UNSUPPORTED_SYMBOL,
+    )
     steps: list[Step] = []
     result = _differentiate(expr, variable, steps)
     simplified = simplify(result, trace=True)

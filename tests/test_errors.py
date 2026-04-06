@@ -3,8 +3,10 @@ import pytest
 from stepcas import Expr, Number, Pow, Symbol, differentiate, parse_expr
 from stepcas.errors import (
     DIFFERENTIATE_NON_CONSTANT_EXPONENT,
+    DIFFERENTIATE_UNSUPPORTED_SYMBOL,
     DIFFERENTIATE_UNSUPPORTED_EXPRESSION,
     LINEAR_NONLINEAR_FORM,
+    LINEAR_UNSUPPORTED_SYMBOL,
     PARSE_SYNTAX_ERROR,
     PARSE_UNSUPPORTED_SYNTAX,
     REWRITE_INVALID_RULE_RESULT,
@@ -54,6 +56,13 @@ def test_differentiation_error_code_for_unsupported_expression() -> None:
     assert exc_info.value.code == DIFFERENTIATE_UNSUPPORTED_EXPRESSION
 
 
+def test_differentiation_error_code_for_invalid_target_variable() -> None:
+    with pytest.raises(DifferentiationError) as exc_info:
+        differentiate(Number(1), "1x")
+
+    assert exc_info.value.code == DIFFERENTIATE_UNSUPPORTED_SYMBOL
+
+
 def test_rewrite_error_has_stable_code_for_invalid_rule_result_shape() -> None:
     with pytest.raises(RewriteError) as exc_info:
         rewrite_fixpoint(Number(1), [("bad-rule", lambda expr: Number(2))], [])
@@ -74,3 +83,10 @@ def test_linear_form_error_uses_shared_hierarchy_and_stable_code() -> None:
     assert isinstance(err, ValueError)
     assert err.domain == "linear"
     assert err.code == LINEAR_NONLINEAR_FORM
+
+
+def test_linear_form_error_code_for_invalid_target_variable() -> None:
+    with pytest.raises(LinearFormError) as exc_info:
+        extract_linear_form(parse_expr("x + 1"), "x+y")
+
+    assert exc_info.value.code == LINEAR_UNSUPPORTED_SYMBOL

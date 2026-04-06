@@ -9,6 +9,7 @@ from .errors import (
     LinearFormError,
 )
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
+from .variable_validation import validate_target_variable
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,11 @@ class LinearForm:
 
 
 def extract_linear_form(expr: Expr, variable: str) -> LinearForm:
+    variable = validate_target_variable(
+        variable,
+        error_cls=LinearFormError,
+        code=LINEAR_UNSUPPORTED_SYMBOL,
+    )
     coefficient, constant = _extract_coefficients(expr, variable)
     return LinearForm(variable=variable, coefficient=coefficient, constant=constant)
 

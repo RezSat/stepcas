@@ -1,13 +1,16 @@
+import pytest
+
 from stepcas import (
     InfiniteLinearSolutions,
     LinearSolveKind,
     NoLinearSolution,
+    Number,
     SolvedLinearEquation,
     parse_expr,
     simplify,
     solve_linear_equation,
 )
-from stepcas.errors import LinearFormError
+from stepcas.errors import LINEAR_UNSUPPORTED_SYMBOL, LinearFormError
 
 
 def test_solve_linear_equation_returns_unique_solution() -> None:
@@ -122,3 +125,13 @@ def test_solve_linear_equation_rejects_unsupported_symbol_inputs() -> None:
     except LinearFormError:
         return
     raise AssertionError("Expected LinearFormError for unsupported symbol solve input")
+
+
+@pytest.mark.parametrize("invalid_variable", ["", "1x", "x+y", None, 1])
+def test_solve_linear_equation_rejects_invalid_target_variable_identifiers(
+    invalid_variable: object,
+) -> None:
+    with pytest.raises(LinearFormError) as exc_info:
+        solve_linear_equation(Number(1), Number(1), invalid_variable)
+
+    assert exc_info.value.code == LINEAR_UNSUPPORTED_SYMBOL

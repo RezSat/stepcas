@@ -4,8 +4,10 @@ from dataclasses import dataclass
 from enum import Enum
 
 from .expression import Equation, Expr, Mul, Number, Symbol
+from .errors import LINEAR_UNSUPPORTED_SYMBOL, LinearFormError
 from .linear_form import extract_linear_form
 from .trace import Step
+from .variable_validation import validate_target_variable
 
 
 class LinearSolveKind(str, Enum):
@@ -48,6 +50,11 @@ def solve_linear_equation(
     variable: str,
     trace: bool = False,
 ) -> LinearSolveResult | LinearSolveTraceResult:
+    variable = validate_target_variable(
+        variable,
+        error_cls=LinearFormError,
+        code=LINEAR_UNSUPPORTED_SYMBOL,
+    )
     steps: list[Step] = []
 
     lhs_form = extract_linear_form(lhs, variable)

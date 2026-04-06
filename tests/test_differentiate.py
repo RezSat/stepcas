@@ -1,4 +1,7 @@
+import pytest
+
 from stepcas import Add, Mul, Number, Pow, Symbol, differentiate
+from stepcas.errors import DIFFERENTIATE_UNSUPPORTED_SYMBOL, DifferentiationError
 
 from tests.trace_helpers import assert_trace_before_after_integrity, assert_trace_rule_sequence
 
@@ -52,3 +55,13 @@ def test_differentiate_sum() -> None:
         Number(2),
         Mul(Number(2), Symbol("x")),
     )
+
+
+@pytest.mark.parametrize("invalid_variable", ["", "1x", "x+y", None, 1])
+def test_differentiate_rejects_invalid_target_variable_identifiers(
+    invalid_variable: object,
+) -> None:
+    with pytest.raises(DifferentiationError) as exc_info:
+        differentiate(Symbol("x"), invalid_variable)
+
+    assert exc_info.value.code == DIFFERENTIATE_UNSUPPORTED_SYMBOL

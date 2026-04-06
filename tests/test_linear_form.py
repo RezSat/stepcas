@@ -79,3 +79,13 @@ def test_extract_linear_form_rejects_other_symbols() -> None:
         extract_linear_form(expr, "x")
 
     assert exc_info.value.code == LINEAR_UNSUPPORTED_SYMBOL
+
+
+@pytest.mark.parametrize("invalid_variable", ["", "1x", "x+y", None, 1])
+def test_extract_linear_form_rejects_invalid_target_variable_identifiers(
+    invalid_variable: object,
+) -> None:
+    with pytest.raises(LinearFormError) as exc_info:
+        extract_linear_form(Number(1), invalid_variable)
+
+    assert exc_info.value.code == LINEAR_UNSUPPORTED_SYMBOL
