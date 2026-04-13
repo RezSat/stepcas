@@ -32,6 +32,7 @@ This starter implements:
 - one-variable polynomial degree utility (`polynomial_degree`) for already-expanded forms,
 - one-variable polynomial coefficient extraction (`polynomial_coefficients`) for already-expanded forms,
 - one-variable dense polynomial coefficient vectors (`polynomial_coeff_vector`) for already-expanded forms,
+- one-variable polynomial evaluation (`polynomial_evaluate`) for already-expanded forms,
 - one-variable polynomial leading-term extraction (`polynomial_leading_term`) for already-expanded forms,
 - one-variable polynomial leading-coefficient extraction (`polynomial_leading_coefficient`) for already-expanded forms,
 - one-variable polynomial trailing-coefficient extraction (`polynomial_trailing_coefficient`) for already-expanded forms,
@@ -99,6 +100,7 @@ from stepcas import (
     polynomial_coeff_vector,
     polynomial_coefficients,
     polynomial_degree,
+    polynomial_evaluate,
     polynomial_leading_coefficient,
     polynomial_leading_term,
     polynomial_trailing_coefficient,
@@ -127,6 +129,9 @@ print(coefficients)  # {2: 3, 1: -2, 0: 5}
 
 vector = polynomial_coeff_vector(parse_expr("3*x**4 - 2*x + 5"), "x")
 print(vector)  # [3, 0, 0, -2, 5]
+
+evaluated = polynomial_evaluate(parse_expr("3*x**2 - 2*x + 5"), "x", 2)
+print(evaluated)  # 13
 
 leading = polynomial_leading_term(parse_expr("3*x**4 - 2*x + 5"), "x")
 print(leading)  # (4, 3)

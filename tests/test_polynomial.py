@@ -4,6 +4,7 @@ from stepcas import (
     Number,
     Symbol,
     polynomial_coeff_vector,
+    polynomial_evaluate,
     parse_expr,
     polynomial_coefficients,
     polynomial_degree,
@@ -118,6 +119,37 @@ def test_polynomial_coeff_vector_rejects_invalid_variable_name() -> None:
         polynomial_coeff_vector(expr, "x+y")
 
     assert exc_info.value.code == POLYNOMIAL_UNSUPPORTED_SYMBOL
+
+
+def test_polynomial_evaluate_integer_value_returns_integer_result() -> None:
+    expr = simplify(parse_expr("3*x**2 - 2*x + 5"))
+    assert polynomial_evaluate(expr, "x", 2) == 13
+
+
+def test_polynomial_evaluate_float_value_returns_float_result() -> None:
+    expr = simplify(parse_expr("3*x**2 - 2*x + 5"))
+    assert polynomial_evaluate(expr, "x", 0.5) == pytest.approx(4.75)
+
+
+def test_polynomial_evaluate_float_coefficients_with_integer_value() -> None:
+    expr = simplify(parse_expr("0.5*x**2 + 1.5*x + 2.0"))
+    assert polynomial_evaluate(expr, "x", 2) == pytest.approx(7.0)
+
+
+def test_polynomial_evaluate_rejects_unexpanded_structure() -> None:
+    expr = simplify(parse_expr("2*(x+1)"))
+    with pytest.raises(PolynomialError) as exc_info:
+        polynomial_evaluate(expr, "x", 3)
+
+    assert exc_info.value.code == POLYNOMIAL_UNSUPPORTED_STRUCTURE
+
+
+def test_polynomial_evaluate_rejects_unexpanded_product_of_sums() -> None:
+    expr = simplify(parse_expr("(x+1)*(x+2)"))
+    with pytest.raises(PolynomialError) as exc_info:
+        polynomial_evaluate(expr, "x", 3)
+
+    assert exc_info.value.code == POLYNOMIAL_UNSUPPORTED_STRUCTURE
 
 
 def test_polynomial_leading_term_selects_highest_power() -> None:

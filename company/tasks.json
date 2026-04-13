@@ -1,462 +1,462 @@
 [
-    {
-        "id":  "BOOT-001",
-        "title":  "Bootstrap planning backlog",
-        "agent":  "lead-engineer",
-        "command":  "/company-bootstrap Read AGENTS.md, program.md, docs/architecture.md, docs/roadmap.md, ADRs, current source, tests, and company state. Create a prioritized backlog in company/tasks.json with dependencies, clear acceptance criteria, and small human-like implementation slices. Then stop after planning and backlog generation only.",
-        "status":  "done",
-        "priority":  1,
-        "branch":  "chore/bootstrap-planning",
-        "notes":  "Backlog generated below; keep this task as runner-owned lifecycle entry."
-    },
-    {
-        "id":  "T-010",
-        "title":  "Parser precedence and rejection regression pack",
-        "agent":  "lead-engineer",
-        "command":  "/test-gap Add parser regression tests for precedence/associativity and unsupported syntax rejection (calls, floor-div, malformed input). Keep patch test-only.",
-        "status":  "done",
-        "priority":  10,
-        "branch":  "tests/parser-regressions",
-        "notes":  "depends_on: []; acceptance: parse precedence cases pass, right-assoc power covered, unsupported AST forms raise ParseError, malformed input raises ParseError."
-    },
-    {
-        "id":  "T-011",
-        "title":  "Simplify edge-case regression around power identities",
-        "agent":  "lead-engineer",
-        "command":  "/test-gap Add simplify regression tests for identity edge cases, especially 0-power corner behavior and nested flatten/fold fixpoint behavior.",
-        "status":  "done",
-        "priority":  11,
-        "branch":  "tests/simplify-edge-cases",
-        "notes":  "depends_on: [T-010]; acceptance: additive/multiplicative identity edges covered, nested flatten+fold regression added, explicit invariant test for 0**0 and 0**-1 behavior captured."
-    },
-    {
-        "id":  "T-012",
-        "title":  "Trace invariant test helpers",
-        "agent":  "lead-engineer",
-        "command":  "/test-gap Introduce reusable test helpers for step traces (rule sequence and before/after integrity) and adopt in simplify+differentiate tests.",
-        "status":  "done",
-        "priority":  12,
-        "branch":  "tests/trace-invariants",
-        "notes":  "depends_on: [T-011]; acceptance: helper assertions exist, at least one simplify and one differentiate trace test use them, no production behavior change."
-    },
-    {
-        "id":  "T-020",
-        "title":  "Deterministic expression sort key utility",
-        "agent":  "lead-engineer",
-        "command":  "/design-rule Define a stable total order utility for Expr nodes (Number/Symbol/Pow/Mul/Add) to support canonicalization without leaking policy across rules.",
-        "status":  "done",
-        "priority":  20,
-        "branch":  "feat/canonical-sort-key",
-        "notes":  "depends_on: [T-012]; acceptance: single reusable sort-key utility with recursive tie-breaks, deterministic sort behavior proven by tests, no rewrite behavior change yet."
-    },
-    {
-        "id":  "T-021",
-        "title":  "Canonical ordering rewrite rules for Add and Mul",
-        "agent":  "lead-engineer",
-        "command":  "/implement canonical-order-add and canonical-order-mul rewrite rules using the shared sort key; ensure explicit trace steps and idempotent simplify output.",
-        "status":  "done",
-        "priority":  21,
-        "branch":  "feat/canonical-ordering",
-        "notes":  "depends_on: [T-020]; acceptance: reordered Add/Mul normalize consistently, trace emits canonical-order rule names, simplify is idempotent on second pass, existing tests pass."
-    },
-    {
-        "id":  "T-022",
-        "title":  "Additive term decomposition helper",
-        "agent":  "lead-engineer",
-        "command":  "/design-rule Add a small helper that decomposes additive terms into (numeric coefficient, symbolic core) for x, -x, 3*x, and canonical products.",
-        "status":  "done",
-        "priority":  22,
-        "branch":  "feat/term-decomposition",
-        "notes":  "depends_on: [T-021]; acceptance: decomposition handles constants/signed terms/products predictably, preserves immutability, and has dedicated unit coverage."
-    },
-    {
-        "id":  "T-023",
-        "title":  "Collect like terms rewrite",
-        "agent":  "lead-engineer",
-        "command":  "/implement collect-like-terms rewrite for additive groups only (no expansion/factoring). Emit explicit step and preserve canonical ordering.",
-        "status":  "done",
-        "priority":  23,
-        "branch":  "feat/like-term-collection",
-        "notes":  "depends_on: [T-022]; acceptance: x+x-\u003e2*x and 2*x+3*x-\u003e5*x pass, unlike terms remain separate, cancellation reaches zero via existing rules, trace includes collect-like-terms."
-    },
-    {
-        "id":  "T-030",
-        "title":  "Error taxonomy baseline",
-        "agent":  "lead-engineer",
-        "command":  "/implement Introduce shared StepcasError hierarchy and stable error codes for parse/differentiate/rewrite domains while keeping backward-compatible behavior.",
-        "status":  "done",
-        "priority":  30,
-        "branch":  "feat/error-taxonomy",
-        "notes":  "depends_on: [T-012]; acceptance: typed error base with codes exists, ParseError and DifferentiationError integrate cleanly, CLI emits predictable user-facing error summary and non-zero exit for known domain errors."
-    },
-    {
-        "id":  "T-040",
-        "title":  "Linear form extractor (single variable)",
-        "agent":  "lead-engineer",
-        "command":  "/design-rule Implement helper extracting ax+b from simplified expressions for one variable, with typed rejection for non-linear forms.",
-        "status":  "done",
-        "priority":  40,
-        "branch":  "feat/linear-form-extractor",
-        "notes":  "depends_on: [T-023, T-030]; acceptance: extracts numeric a/b for linear forms, rejects x^2/x*y/1/x with typed solve-domain errors, tests include positive/negative coefficients and variable-absent cases."
-    },
-    {
-        "id":  "T-041",
-        "title":  "solve_linear API with step trace",
-        "agent":  "lead-engineer",
-        "command":  "/implement Add core linear solve API for lhs=rhs with explicit isolate/divide steps and typed handling of no-solution/infinite-solution/zero-coefficient cases.",
-        "status":  "done",
-        "priority":  41,
-        "branch":  "feat/linear-solve-api",
-        "notes":  "depends_on: [T-040]; acceptance: solves representative linear equations, emits ordered solver steps, degenerate cases handled with typed outcomes, unit tests cover success and failure paths."
-    },
-    {
-        "id":  "T-042",
-        "title":  "CLI solve command",
-        "agent":  "lead-engineer",
-        "command":  "/implement Expose solve command in CLI with optional --steps output using the same Step objects/rule names as the solve API.",
-        "status":  "done",
-        "priority":  42,
-        "branch":  "feat/cli-solve",
-        "notes":  "depends_on: [T-041]; acceptance: CLI solve works for at least one success and one failure case, --steps prints numbered rule trace, smoke tests added."
-    },
-    {
-        "id":  "T-050",
-        "title":  "Versioned JSON trace serializer",
-        "agent":  "lead-engineer",
-        "command":  "/implement Add schema-versioned JSON serializer for Expr/Step/TraceResult with stable node kinds and typed fields suitable for API/UI clients.",
-        "status":  "done",
-        "priority":  50,
-        "branch":  "feat/json-trace-serializer",
-        "notes":  "depends_on: [T-030]; acceptance: payload includes schema_version, final expr, and structured steps; no reliance on pretty-print strings; serializer tests lock schema shape."
-    },
-    {
-        "id":  "T-051",
-        "title":  "CLI --json mode for simplify/diff/solve",
-        "agent":  "lead-engineer",
-        "command":  "/implement Add --json output option for simplify, diff, and solve commands, including structured error payloads with code/message.",
-        "status":  "done",
-        "priority":  51,
-        "branch":  "feat/cli-json-output",
-        "notes":  "depends_on: [T-042, T-050]; acceptance: each command emits valid JSON in normal and trace modes, errors are structured, existing human-readable default output remains unchanged."
-    },
-    {
-        "id":  "T-060",
-        "title":  "Benchmark harness baseline",
-        "agent":  "lead-engineer",
-        "command":  "/benchmark Add reproducible benchmark harness for simplify/differentiate/solve workloads with runtime and step-count output plus baseline recording docs.",
-        "status":  "done",
-        "priority":  60,
-        "branch":  "chore/benchmark-baseline",
-        "notes":  "depends_on: [T-051]; acceptance: benchmark entrypoint added, representative corpus included, output captures runtime+step counts, docs explain how to run and compare baselines."
-    },
-    {
-        "id":  "T-070",
-        "title":  "Roadmap and ADR sync after Milestone 1 slices",
-        "agent":  "lead-engineer",
-        "command":  "/docs-sync Update roadmap and add ADR notes for canonicalization, solve scope boundaries, JSON trace schema contract, and error taxonomy decisions.",
-        "status":  "done",
-        "priority":  70,
-        "branch":  "docs/m1-contract-sync",
-        "notes":  "depends_on: [T-051, T-060]; acceptance: docs reflect delivered behavior and scope boundaries, ADR updates record major decisions, no stale milestone language remains."
-    },
-    {
-        "id":  "BOOT-002",
-        "title":  "Execute first milestone",
-        "agent":  "lead-engineer",
-        "command":  "/execute-milestone After BOOT-001 finishes, pick the highest-priority unblocked milestone and implement only the first smallest safe slice. Write tests, run tests, update docs, and commit once the slice passes. Do not overbuild. Stop after one coherent slice.",
-        "status":  "done",
-        "priority":  2,
-        "branch":  "feat/first-milestone-slice",
-        "notes":  "Implemented first Milestone 2 slice: added univariate polynomial_degree utility with typed polynomial errors, tests, and docs updates."
-    },
-    {
-        "id":  "HANDOFF-001",
-        "title":  "Read TASK.md and continue autonomous development",
-        "agent":  "build",
-        "command":  "Read TASK.md and all referenced project documents. Then continue autonomous StepCAS development by selecting the highest-priority unblocked work, implementing one coherent slice at a time, running tests, committing successful changes, and creating follow-up tasks only via .\\scripts\\add-task.ps1. Never manually edit company/tasks.json. Continue maintaining and improving the system under the rules in TASK.md.",
-        "status":  "done",
-        "priority":  1,
-        "branch":  "feat/autonomous-handoff",
-        "notes":  ""
-    },
-    {
-        "id":  "T-082",
-        "title":  "Polynomial coefficient vector utility",
-        "agent":  "lead-engineer",
-        "command":  "/implement Add polynomial_coeff_vector(expr, variable) returning dense coefficient list with strict one-variable validation and tests.",
-        "status":  "done",
-        "priority":  82,
-        "branch":  "feat/polynomial-coeff-vector",
-        "notes":  "depends_on: [HANDOFF-001]; acceptance: dense highest-degree-to-constant output, zero-fill missing degrees, non-polynomial forms raise typed PolynomialError."
-    },
-    {
-        "id":  "T-083",
-        "title":  "Multiply power-merge rewrite",
-        "agent":  "lead-engineer",
-        "command":  "/implement Add a mul-level rewrite that merges repeated bases into integer powers (x*x**2 -\u003e x**3) with explicit trace steps and regression tests.",
-        "status":  "done",
-        "priority":  83,
-        "branch":  "feat/mul-power-merge",
-        "notes":  ""
-    },
-    {
-        "id":  "T-20260406-001",
-        "title":  "Expand polynomial domain utility coverage",
-        "agent":  "lead-engineer",
-        "command":  "Implement one polynomial utility slice by adding leading-term extraction for univariate expanded polynomials with tests and docs updates.",
-        "status":  "done",
-        "priority":  20,
-        "branch":  "main",
-        "notes":  ""
-    },
-    {
-        "id":  "T-POLY-LEADING-API-001",
-        "title":  "Add polynomial leading-coefficient helper built on leading term",
-        "agent":  "lead-engineer",
-        "command":  "Implement polynomial_leading_coefficient(expr, variable) with tests and README update",
-        "status":  "done",
-        "priority":  88,
-        "branch":  "feat/polynomial-leading-coefficient",
-        "notes":  ""
-    },
-    {
-        "id":  "task-poly-trailing-coefficient",
-        "title":  "Implement polynomial trailing-coefficient utility with tests",
-        "agent":  "lead-engineer",
-        "command":  "Implement polynomial_trailing_coefficient(expr, variable) with tests and README update",
-        "status":  "done",
-        "priority":  2,
-        "branch":  "feat/polynomial-trailing-coefficient",
-        "notes":  ""
-    },
-    {
-        "id":  "task-poly-trailing-term",
-        "title":  "Implement polynomial_trailing_term utility",
-        "agent":  "lead-engineer",
-        "command":  "Implement polynomial_trailing_term(expr, variable) with tests and README update",
-        "status":  "done",
-        "priority":  2,
-        "branch":  "main",
-        "notes":  ""
-    },
-    {
-        "id":  "poly-lowest-degree-helper",
-        "title":  "Implement polynomial_constant_term helper API",
-        "agent":  "lead-engineer",
-        "command":  "Implement polynomial_constant_term(expr, variable) alias and tests",
-        "status":  "done",
-        "priority":  2,
-        "branch":  "main",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-AUTO",
-        "title":  "Maintain backlog health automatically",
-        "agent":  "project-manager",
-        "command":  "Read TASK.md, AGENTS.md, program.md, docs, source, tests, recent completed tasks, and current backlog. If backlog is low, empty, too repetitive, or missing strategic coverage, add a balanced set of small implementation, bugfix, test, docs, cleanup, and architecture tasks using .\\scripts\\add-task.ps1. Never manually edit company/tasks.json.",
-        "status":  "done",
-        "priority":  1,
-        "branch":  "chore/backlog-health-auto",
-        "notes":  ""
-    },
-    {
-        "id":  "ARCH-AUTO",
-        "title":  "Review architecture and add strategic tasks automatically",
-        "agent":  "chief-architect",
-        "command":  "Inspect the full StepCAS repository, architecture docs, roadmap, source, tests, and recent progress. Identify missing capabilities, fragile design, neglected subsystems, and strategic next steps. Add small actionable tasks using .\\scripts\\add-task.ps1. Never manually edit company/tasks.json.",
-        "status":  "running",
-        "priority":  2,
-        "branch":  "chore/architecture-review-auto",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-20260406-109",
-        "title":  "Validate target variable names across core APIs",
-        "agent":  "debug-engineer",
-        "command":  "Add shared target-variable validation for differentiate, extract_linear_form, and solve_linear_equation; reject invalid identifiers with stable error codes and add regression tests.",
-        "status":  "queued",
-        "priority":  6,
-        "branch":  "fix/variable-name-validation",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-20260406-110",
-        "title":  "Expand solve and CLI JSON failure regression coverage",
-        "agent":  "test-engineer",
-        "command":  "Add focused tests for solve_linear_equation and CLI --json error payloads covering nonlinear, unsupported symbol, and malformed input cases with stable code assertions.",
-        "status":  "queued",
-        "priority":  7,
-        "branch":  "tests/solve-cli-json-failures",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-20260406-111",
-        "title":  "Add polynomial numeric evaluation utility slice",
-        "agent":  "lead-engineer",
-        "command":  "Implement a small univariate polynomial_evaluate utility for expanded forms, expose it in __init__, and add tests/docs for integer and float evaluation paths plus unsupported-structure errors.",
-        "status":  "queued",
-        "priority":  8,
-        "branch":  "feat/polynomial-evaluate",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-20260406-112",
-        "title":  "Define API/web readiness response matrix",
-        "agent":  "chief-architect",
-        "command":  "Write a short architecture note mapping simplify/diff/solve success and failure payload contracts into web endpoint response shapes, including schema-versioning and error-code requirements.",
-        "status":  "queued",
-        "priority":  9,
-        "branch":  "docs/api-response-matrix",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-20260406-113",
-        "title":  "Document variable and expanded-form preconditions",
-        "agent":  "doc-writer",
-        "command":  "Update README and docs to clearly state variable-name validation rules and expanded-form prerequisites for linear and polynomial helpers, with concise examples.",
-        "status":  "queued",
-        "priority":  10,
-        "branch":  "docs/preconditions-clarity",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-20260406-114",
-        "title":  "Add benchmark baseline schema regression tests",
-        "agent":  "benchmark-engineer",
-        "command":  "Add tests for benchmark baseline payload stability (schema_version, settings, case keys) and step_count invariants for default cases under fixed iterations.",
-        "status":  "queued",
-        "priority":  11,
-        "branch":  "tests/benchmark-baseline-contract",
-        "notes":  ""
-    },
-    {
-        "id":  "PM-20260406-115",
-        "title":  "Refactor duplicate equation-to-linear setup paths",
-        "agent":  "lead-engineer",
-        "command":  "Perform a cleanup pass to centralize lhs/rhs linear-form extraction and isolate-step construction in solve_linear without changing behavior; keep trace output identical and prove with tests.",
-        "status":  "queued",
-        "priority":  12,
-        "branch":  "refactor/solve-linear-setup",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-01",
-        "title":  "Add rewrite fixpoint guardrails for termination and trace size",
-        "agent":  "lead-engineer",
-        "command":  "Implement configurable iteration and step guards in rewrite_fixpoint, raise a structured rewrite error when limits are exceeded, and add tests for non-terminating rule sets.",
-        "status":  "queued",
-        "priority":  10,
-        "branch":  "feat/rewrite-guardrails",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-02",
-        "title":  "Standardize variable-name validation across public APIs",
-        "agent":  "lead-engineer",
-        "command":  "Create one shared variable-name validator and apply it in differentiate, solve_linear_equation, and polynomial helpers with consistent error codes and tests.",
-        "status":  "queued",
-        "priority":  18,
-        "branch":  "feat/variable-validation",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-03",
-        "title":  "Reduce product-rule trace blowup by pruning zero derivative factors",
-        "agent":  "math-architect",
-        "command":  "Optimize derivative-product construction to skip terms where d(factor)=0 while preserving mathematically correct traces, then add regression tests on mixed constant-symbol products.",
-        "status":  "queued",
-        "priority":  22,
-        "branch":  "perf/diff-product-pruning",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-04",
-        "title":  "Extract shared symbol-scanning helpers for linear and polynomial domains",
-        "agent":  "lead-engineer",
-        "command":  "Refactor duplicated contains-variable and contains-other-symbol logic into shared internal utilities used by linear_form and polynomial modules, keeping behavior unchanged and tests passing.",
-        "status":  "queued",
-        "priority":  30,
-        "branch":  "refactor/shared-symbol-scans",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-05",
-        "title":  "Introduce minimal distributive expansion rule with explicit trace step",
-        "agent":  "math-architect",
-        "command":  "Add a narrow expand rule for c*(a+b) and (a+b)*c only, integrate it as an opt-in algorithm path, and add trace-focused tests without broad rewrite expansion.",
-        "status":  "queued",
-        "priority":  35,
-        "branch":  "feat/minimal-expand-rule",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-06",
-        "title":  "Add solver preprocessing pipeline and trace stitching",
-        "agent":  "lead-engineer",
-        "command":  "Make solve_linear_equation optionally simplify both sides before extraction, preserve solve steps plus preprocess steps in a coherent trace, and document exact scope boundaries.",
-        "status":  "queued",
-        "priority":  40,
-        "branch":  "feat/solve-preprocess-trace",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-07",
-        "title":  "Define step metadata conventions for explainability pipeline",
-        "agent":  "chief-architect",
-        "command":  "Write an ADR defining stable step metadata keys such as phase and visibility, then add minimal enforcement tests for JSON-serializable metadata compatibility.",
-        "status":  "queued",
-        "priority":  45,
-        "branch":  "docs/adr-step-metadata-contract",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-08",
-        "title":  "Add CLI polynomial inspect command",
-        "agent":  "lead-engineer",
-        "command":  "Add a CLI subcommand to expose polynomial degree and coefficient utilities in JSON and text modes with structured errors and tests.",
-        "status":  "queued",
-        "priority":  50,
-        "branch":  "feat/cli-polynomial",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-09",
-        "title":  "Add benchmark baseline comparison mode",
-        "agent":  "benchmark-engineer",
-        "command":  "Extend benchmark CLI with compare-against-baseline support and threshold-based regression detection for runtime and step-count metrics, plus tests and docs updates.",
-        "status":  "queued",
-        "priority":  55,
-        "branch":  "feat/benchmark-compare",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-10",
-        "title":  "Strengthen parser robustness with generative malformed-input tests",
-        "agent":  "test-engineer",
-        "command":  "Add deterministic malformed-expression corpus and light fuzz-style parser tests to validate stable ParseError codes and avoid uncaught exceptions.",
-        "status":  "queued",
-        "priority":  60,
-        "branch":  "tests/parser-robustness",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-11",
-        "title":  "Draft API surface for future web service integration",
-        "agent":  "doc-writer",
-        "command":  "Create docs/api-design.md describing planned HTTP endpoints, request-response contracts, error envelopes, and trace payload reuse strategy for a future web API.",
-        "status":  "queued",
-        "priority":  65,
-        "branch":  "docs/api-design-v1",
-        "notes":  ""
-    },
-    {
-        "id":  "CA-20260406-12",
-        "title":  "Plan package split toward target architecture namespaces",
-        "agent":  "chief-architect",
-        "command":  "Produce a phased migration plan from current module layout to core/rules/rewrite/algorithms/frontends/explain packages with compatibility and test strategy.",
-        "status":  "queued",
-        "priority":  70,
-        "branch":  "arch/package-split-plan",
-        "notes":  ""
-    }
+  {
+    "id": "BOOT-001",
+    "title": "Bootstrap planning backlog",
+    "agent": "lead-engineer",
+    "command": "/company-bootstrap Read AGENTS.md, program.md, docs/architecture.md, docs/roadmap.md, ADRs, current source, tests, and company state. Create a prioritized backlog in company/tasks.json with dependencies, clear acceptance criteria, and small human-like implementation slices. Then stop after planning and backlog generation only.",
+    "status": "done",
+    "priority": 1,
+    "branch": "chore/bootstrap-planning",
+    "notes": "Backlog generated below; keep this task as runner-owned lifecycle entry."
+  },
+  {
+    "id": "T-010",
+    "title": "Parser precedence and rejection regression pack",
+    "agent": "lead-engineer",
+    "command": "/test-gap Add parser regression tests for precedence/associativity and unsupported syntax rejection (calls, floor-div, malformed input). Keep patch test-only.",
+    "status": "done",
+    "priority": 10,
+    "branch": "tests/parser-regressions",
+    "notes": "depends_on: []; acceptance: parse precedence cases pass, right-assoc power covered, unsupported AST forms raise ParseError, malformed input raises ParseError."
+  },
+  {
+    "id": "T-011",
+    "title": "Simplify edge-case regression around power identities",
+    "agent": "lead-engineer",
+    "command": "/test-gap Add simplify regression tests for identity edge cases, especially 0-power corner behavior and nested flatten/fold fixpoint behavior.",
+    "status": "done",
+    "priority": 11,
+    "branch": "tests/simplify-edge-cases",
+    "notes": "depends_on: [T-010]; acceptance: additive/multiplicative identity edges covered, nested flatten+fold regression added, explicit invariant test for 0**0 and 0**-1 behavior captured."
+  },
+  {
+    "id": "T-012",
+    "title": "Trace invariant test helpers",
+    "agent": "lead-engineer",
+    "command": "/test-gap Introduce reusable test helpers for step traces (rule sequence and before/after integrity) and adopt in simplify+differentiate tests.",
+    "status": "done",
+    "priority": 12,
+    "branch": "tests/trace-invariants",
+    "notes": "depends_on: [T-011]; acceptance: helper assertions exist, at least one simplify and one differentiate trace test use them, no production behavior change."
+  },
+  {
+    "id": "T-020",
+    "title": "Deterministic expression sort key utility",
+    "agent": "lead-engineer",
+    "command": "/design-rule Define a stable total order utility for Expr nodes (Number/Symbol/Pow/Mul/Add) to support canonicalization without leaking policy across rules.",
+    "status": "done",
+    "priority": 20,
+    "branch": "feat/canonical-sort-key",
+    "notes": "depends_on: [T-012]; acceptance: single reusable sort-key utility with recursive tie-breaks, deterministic sort behavior proven by tests, no rewrite behavior change yet."
+  },
+  {
+    "id": "T-021",
+    "title": "Canonical ordering rewrite rules for Add and Mul",
+    "agent": "lead-engineer",
+    "command": "/implement canonical-order-add and canonical-order-mul rewrite rules using the shared sort key; ensure explicit trace steps and idempotent simplify output.",
+    "status": "done",
+    "priority": 21,
+    "branch": "feat/canonical-ordering",
+    "notes": "depends_on: [T-020]; acceptance: reordered Add/Mul normalize consistently, trace emits canonical-order rule names, simplify is idempotent on second pass, existing tests pass."
+  },
+  {
+    "id": "T-022",
+    "title": "Additive term decomposition helper",
+    "agent": "lead-engineer",
+    "command": "/design-rule Add a small helper that decomposes additive terms into (numeric coefficient, symbolic core) for x, -x, 3*x, and canonical products.",
+    "status": "done",
+    "priority": 22,
+    "branch": "feat/term-decomposition",
+    "notes": "depends_on: [T-021]; acceptance: decomposition handles constants/signed terms/products predictably, preserves immutability, and has dedicated unit coverage."
+  },
+  {
+    "id": "T-023",
+    "title": "Collect like terms rewrite",
+    "agent": "lead-engineer",
+    "command": "/implement collect-like-terms rewrite for additive groups only (no expansion/factoring). Emit explicit step and preserve canonical ordering.",
+    "status": "done",
+    "priority": 23,
+    "branch": "feat/like-term-collection",
+    "notes": "depends_on: [T-022]; acceptance: x+x->2*x and 2*x+3*x->5*x pass, unlike terms remain separate, cancellation reaches zero via existing rules, trace includes collect-like-terms."
+  },
+  {
+    "id": "T-030",
+    "title": "Error taxonomy baseline",
+    "agent": "lead-engineer",
+    "command": "/implement Introduce shared StepcasError hierarchy and stable error codes for parse/differentiate/rewrite domains while keeping backward-compatible behavior.",
+    "status": "done",
+    "priority": 30,
+    "branch": "feat/error-taxonomy",
+    "notes": "depends_on: [T-012]; acceptance: typed error base with codes exists, ParseError and DifferentiationError integrate cleanly, CLI emits predictable user-facing error summary and non-zero exit for known domain errors."
+  },
+  {
+    "id": "T-040",
+    "title": "Linear form extractor (single variable)",
+    "agent": "lead-engineer",
+    "command": "/design-rule Implement helper extracting ax+b from simplified expressions for one variable, with typed rejection for non-linear forms.",
+    "status": "done",
+    "priority": 40,
+    "branch": "feat/linear-form-extractor",
+    "notes": "depends_on: [T-023, T-030]; acceptance: extracts numeric a/b for linear forms, rejects x^2/x*y/1/x with typed solve-domain errors, tests include positive/negative coefficients and variable-absent cases."
+  },
+  {
+    "id": "T-041",
+    "title": "solve_linear API with step trace",
+    "agent": "lead-engineer",
+    "command": "/implement Add core linear solve API for lhs=rhs with explicit isolate/divide steps and typed handling of no-solution/infinite-solution/zero-coefficient cases.",
+    "status": "done",
+    "priority": 41,
+    "branch": "feat/linear-solve-api",
+    "notes": "depends_on: [T-040]; acceptance: solves representative linear equations, emits ordered solver steps, degenerate cases handled with typed outcomes, unit tests cover success and failure paths."
+  },
+  {
+    "id": "T-042",
+    "title": "CLI solve command",
+    "agent": "lead-engineer",
+    "command": "/implement Expose solve command in CLI with optional --steps output using the same Step objects/rule names as the solve API.",
+    "status": "done",
+    "priority": 42,
+    "branch": "feat/cli-solve",
+    "notes": "depends_on: [T-041]; acceptance: CLI solve works for at least one success and one failure case, --steps prints numbered rule trace, smoke tests added."
+  },
+  {
+    "id": "T-050",
+    "title": "Versioned JSON trace serializer",
+    "agent": "lead-engineer",
+    "command": "/implement Add schema-versioned JSON serializer for Expr/Step/TraceResult with stable node kinds and typed fields suitable for API/UI clients.",
+    "status": "done",
+    "priority": 50,
+    "branch": "feat/json-trace-serializer",
+    "notes": "depends_on: [T-030]; acceptance: payload includes schema_version, final expr, and structured steps; no reliance on pretty-print strings; serializer tests lock schema shape."
+  },
+  {
+    "id": "T-051",
+    "title": "CLI --json mode for simplify/diff/solve",
+    "agent": "lead-engineer",
+    "command": "/implement Add --json output option for simplify, diff, and solve commands, including structured error payloads with code/message.",
+    "status": "done",
+    "priority": 51,
+    "branch": "feat/cli-json-output",
+    "notes": "depends_on: [T-042, T-050]; acceptance: each command emits valid JSON in normal and trace modes, errors are structured, existing human-readable default output remains unchanged."
+  },
+  {
+    "id": "T-060",
+    "title": "Benchmark harness baseline",
+    "agent": "lead-engineer",
+    "command": "/benchmark Add reproducible benchmark harness for simplify/differentiate/solve workloads with runtime and step-count output plus baseline recording docs.",
+    "status": "done",
+    "priority": 60,
+    "branch": "chore/benchmark-baseline",
+    "notes": "depends_on: [T-051]; acceptance: benchmark entrypoint added, representative corpus included, output captures runtime+step counts, docs explain how to run and compare baselines."
+  },
+  {
+    "id": "T-070",
+    "title": "Roadmap and ADR sync after Milestone 1 slices",
+    "agent": "lead-engineer",
+    "command": "/docs-sync Update roadmap and add ADR notes for canonicalization, solve scope boundaries, JSON trace schema contract, and error taxonomy decisions.",
+    "status": "done",
+    "priority": 70,
+    "branch": "docs/m1-contract-sync",
+    "notes": "depends_on: [T-051, T-060]; acceptance: docs reflect delivered behavior and scope boundaries, ADR updates record major decisions, no stale milestone language remains."
+  },
+  {
+    "id": "BOOT-002",
+    "title": "Execute first milestone",
+    "agent": "lead-engineer",
+    "command": "/execute-milestone After BOOT-001 finishes, pick the highest-priority unblocked milestone and implement only the first smallest safe slice. Write tests, run tests, update docs, and commit once the slice passes. Do not overbuild. Stop after one coherent slice.",
+    "status": "done",
+    "priority": 2,
+    "branch": "feat/first-milestone-slice",
+    "notes": "Implemented first Milestone 2 slice: added univariate polynomial_degree utility with typed polynomial errors, tests, and docs updates."
+  },
+  {
+    "id": "HANDOFF-001",
+    "title": "Read TASK.md and continue autonomous development",
+    "agent": "build",
+    "command": "Read TASK.md and all referenced project documents. Then continue autonomous StepCAS development by selecting the highest-priority unblocked work, implementing one coherent slice at a time, running tests, committing successful changes, and creating follow-up tasks only via .\\scripts\\add-task.ps1. Never manually edit company/tasks.json. Continue maintaining and improving the system under the rules in TASK.md.",
+    "status": "done",
+    "priority": 1,
+    "branch": "feat/autonomous-handoff",
+    "notes": ""
+  },
+  {
+    "id": "T-082",
+    "title": "Polynomial coefficient vector utility",
+    "agent": "lead-engineer",
+    "command": "/implement Add polynomial_coeff_vector(expr, variable) returning dense coefficient list with strict one-variable validation and tests.",
+    "status": "done",
+    "priority": 82,
+    "branch": "feat/polynomial-coeff-vector",
+    "notes": "depends_on: [HANDOFF-001]; acceptance: dense highest-degree-to-constant output, zero-fill missing degrees, non-polynomial forms raise typed PolynomialError."
+  },
+  {
+    "id": "T-083",
+    "title": "Multiply power-merge rewrite",
+    "agent": "lead-engineer",
+    "command": "/implement Add a mul-level rewrite that merges repeated bases into integer powers (x*x**2 -> x**3) with explicit trace steps and regression tests.",
+    "status": "done",
+    "priority": 83,
+    "branch": "feat/mul-power-merge",
+    "notes": ""
+  },
+  {
+    "id": "T-20260406-001",
+    "title": "Expand polynomial domain utility coverage",
+    "agent": "lead-engineer",
+    "command": "Implement one polynomial utility slice by adding leading-term extraction for univariate expanded polynomials with tests and docs updates.",
+    "status": "done",
+    "priority": 20,
+    "branch": "main",
+    "notes": ""
+  },
+  {
+    "id": "T-POLY-LEADING-API-001",
+    "title": "Add polynomial leading-coefficient helper built on leading term",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_leading_coefficient(expr, variable) with tests and README update",
+    "status": "done",
+    "priority": 88,
+    "branch": "feat/polynomial-leading-coefficient",
+    "notes": ""
+  },
+  {
+    "id": "task-poly-trailing-coefficient",
+    "title": "Implement polynomial trailing-coefficient utility with tests",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_trailing_coefficient(expr, variable) with tests and README update",
+    "status": "done",
+    "priority": 2,
+    "branch": "feat/polynomial-trailing-coefficient",
+    "notes": ""
+  },
+  {
+    "id": "task-poly-trailing-term",
+    "title": "Implement polynomial_trailing_term utility",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_trailing_term(expr, variable) with tests and README update",
+    "status": "done",
+    "priority": 2,
+    "branch": "main",
+    "notes": ""
+  },
+  {
+    "id": "poly-lowest-degree-helper",
+    "title": "Implement polynomial_constant_term helper API",
+    "agent": "lead-engineer",
+    "command": "Implement polynomial_constant_term(expr, variable) alias and tests",
+    "status": "done",
+    "priority": 2,
+    "branch": "main",
+    "notes": ""
+  },
+  {
+    "id": "PM-AUTO",
+    "title": "Maintain backlog health automatically",
+    "agent": "project-manager",
+    "command": "Read TASK.md, AGENTS.md, program.md, docs, source, tests, recent completed tasks, and current backlog. If backlog is low, empty, too repetitive, or missing strategic coverage, add a balanced set of small implementation, bugfix, test, docs, cleanup, and architecture tasks using .\\scripts\\add-task.ps1. Never manually edit company/tasks.json.",
+    "status": "done",
+    "priority": 1,
+    "branch": "chore/backlog-health-auto",
+    "notes": ""
+  },
+  {
+    "id": "ARCH-AUTO",
+    "title": "Review architecture and add strategic tasks automatically",
+    "agent": "chief-architect",
+    "command": "Inspect the full StepCAS repository, architecture docs, roadmap, source, tests, and recent progress. Identify missing capabilities, fragile design, neglected subsystems, and strategic next steps. Add small actionable tasks using .\\scripts\\add-task.ps1. Never manually edit company/tasks.json.",
+    "status": "done",
+    "priority": 2,
+    "branch": "chore/architecture-review-auto",
+    "notes": ""
+  },
+  {
+    "id": "PM-20260406-109",
+    "title": "Validate target variable names across core APIs",
+    "agent": "debug-engineer",
+    "command": "Add shared target-variable validation for differentiate, extract_linear_form, and solve_linear_equation; reject invalid identifiers with stable error codes and add regression tests.",
+    "status": "done",
+    "priority": 6,
+    "branch": "fix/variable-name-validation",
+    "notes": ""
+  },
+  {
+    "id": "PM-20260406-110",
+    "title": "Expand solve and CLI JSON failure regression coverage",
+    "agent": "test-engineer",
+    "command": "Add focused tests for solve_linear_equation and CLI --json error payloads covering nonlinear, unsupported symbol, and malformed input cases with stable code assertions.",
+    "status": "done",
+    "priority": 7,
+    "branch": "tests/solve-cli-json-failures",
+    "notes": ""
+  },
+  {
+    "id": "PM-20260406-111",
+    "title": "Add polynomial numeric evaluation utility slice",
+    "agent": "lead-engineer",
+    "command": "Implement a small univariate polynomial_evaluate utility for expanded forms, expose it in __init__, and add tests/docs for integer and float evaluation paths plus unsupported-structure errors.",
+    "status": "queued",
+    "priority": 8,
+    "branch": "feat/polynomial-evaluate",
+    "notes": ""
+  },
+  {
+    "id": "PM-20260406-112",
+    "title": "Define API/web readiness response matrix",
+    "agent": "chief-architect",
+    "command": "Write a short architecture note mapping simplify/diff/solve success and failure payload contracts into web endpoint response shapes, including schema-versioning and error-code requirements.",
+    "status": "queued",
+    "priority": 9,
+    "branch": "docs/api-response-matrix",
+    "notes": ""
+  },
+  {
+    "id": "PM-20260406-113",
+    "title": "Document variable and expanded-form preconditions",
+    "agent": "doc-writer",
+    "command": "Update README and docs to clearly state variable-name validation rules and expanded-form prerequisites for linear and polynomial helpers, with concise examples.",
+    "status": "queued",
+    "priority": 10,
+    "branch": "docs/preconditions-clarity",
+    "notes": ""
+  },
+  {
+    "id": "PM-20260406-114",
+    "title": "Add benchmark baseline schema regression tests",
+    "agent": "benchmark-engineer",
+    "command": "Add tests for benchmark baseline payload stability (schema_version, settings, case keys) and step_count invariants for default cases under fixed iterations.",
+    "status": "queued",
+    "priority": 11,
+    "branch": "tests/benchmark-baseline-contract",
+    "notes": ""
+  },
+  {
+    "id": "PM-20260406-115",
+    "title": "Refactor duplicate equation-to-linear setup paths",
+    "agent": "lead-engineer",
+    "command": "Perform a cleanup pass to centralize lhs/rhs linear-form extraction and isolate-step construction in solve_linear without changing behavior; keep trace output identical and prove with tests.",
+    "status": "queued",
+    "priority": 12,
+    "branch": "refactor/solve-linear-setup",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-01",
+    "title": "Add rewrite fixpoint guardrails for termination and trace size",
+    "agent": "lead-engineer",
+    "command": "Implement configurable iteration and step guards in rewrite_fixpoint, raise a structured rewrite error when limits are exceeded, and add tests for non-terminating rule sets.",
+    "status": "queued",
+    "priority": 10,
+    "branch": "feat/rewrite-guardrails",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-02",
+    "title": "Standardize variable-name validation across public APIs",
+    "agent": "lead-engineer",
+    "command": "Create one shared variable-name validator and apply it in differentiate, solve_linear_equation, and polynomial helpers with consistent error codes and tests.",
+    "status": "queued",
+    "priority": 18,
+    "branch": "feat/variable-validation",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-03",
+    "title": "Reduce product-rule trace blowup by pruning zero derivative factors",
+    "agent": "math-architect",
+    "command": "Optimize derivative-product construction to skip terms where d(factor)=0 while preserving mathematically correct traces, then add regression tests on mixed constant-symbol products.",
+    "status": "queued",
+    "priority": 22,
+    "branch": "perf/diff-product-pruning",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-04",
+    "title": "Extract shared symbol-scanning helpers for linear and polynomial domains",
+    "agent": "lead-engineer",
+    "command": "Refactor duplicated contains-variable and contains-other-symbol logic into shared internal utilities used by linear_form and polynomial modules, keeping behavior unchanged and tests passing.",
+    "status": "queued",
+    "priority": 30,
+    "branch": "refactor/shared-symbol-scans",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-05",
+    "title": "Introduce minimal distributive expansion rule with explicit trace step",
+    "agent": "math-architect",
+    "command": "Add a narrow expand rule for c*(a+b) and (a+b)*c only, integrate it as an opt-in algorithm path, and add trace-focused tests without broad rewrite expansion.",
+    "status": "queued",
+    "priority": 35,
+    "branch": "feat/minimal-expand-rule",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-06",
+    "title": "Add solver preprocessing pipeline and trace stitching",
+    "agent": "lead-engineer",
+    "command": "Make solve_linear_equation optionally simplify both sides before extraction, preserve solve steps plus preprocess steps in a coherent trace, and document exact scope boundaries.",
+    "status": "queued",
+    "priority": 40,
+    "branch": "feat/solve-preprocess-trace",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-07",
+    "title": "Define step metadata conventions for explainability pipeline",
+    "agent": "chief-architect",
+    "command": "Write an ADR defining stable step metadata keys such as phase and visibility, then add minimal enforcement tests for JSON-serializable metadata compatibility.",
+    "status": "queued",
+    "priority": 45,
+    "branch": "docs/adr-step-metadata-contract",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-08",
+    "title": "Add CLI polynomial inspect command",
+    "agent": "lead-engineer",
+    "command": "Add a CLI subcommand to expose polynomial degree and coefficient utilities in JSON and text modes with structured errors and tests.",
+    "status": "queued",
+    "priority": 50,
+    "branch": "feat/cli-polynomial",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-09",
+    "title": "Add benchmark baseline comparison mode",
+    "agent": "benchmark-engineer",
+    "command": "Extend benchmark CLI with compare-against-baseline support and threshold-based regression detection for runtime and step-count metrics, plus tests and docs updates.",
+    "status": "queued",
+    "priority": 55,
+    "branch": "feat/benchmark-compare",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-10",
+    "title": "Strengthen parser robustness with generative malformed-input tests",
+    "agent": "test-engineer",
+    "command": "Add deterministic malformed-expression corpus and light fuzz-style parser tests to validate stable ParseError codes and avoid uncaught exceptions.",
+    "status": "queued",
+    "priority": 60,
+    "branch": "tests/parser-robustness",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-11",
+    "title": "Draft API surface for future web service integration",
+    "agent": "doc-writer",
+    "command": "Create docs/api-design.md describing planned HTTP endpoints, request-response contracts, error envelopes, and trace payload reuse strategy for a future web API.",
+    "status": "queued",
+    "priority": 65,
+    "branch": "docs/api-design-v1",
+    "notes": ""
+  },
+  {
+    "id": "CA-20260406-12",
+    "title": "Plan package split toward target architecture namespaces",
+    "agent": "chief-architect",
+    "command": "Produce a phased migration plan from current module layout to core/rules/rewrite/algorithms/frontends/explain packages with compatibility and test strategy.",
+    "status": "queued",
+    "priority": 70,
+    "branch": "arch/package-split-plan",
+    "notes": ""
+  }
 ]

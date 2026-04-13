@@ -49,6 +49,30 @@ def polynomial_coeff_vector(expr: Expr, variable: str) -> list[NumberLike]:
     return [coefficients.get(degree, 0) for degree in range(max_degree, -1, -1)]
 
 
+def polynomial_evaluate(expr: Expr, variable: str, value: NumberLike) -> NumberLike:
+    """Evaluate a one-variable polynomial expression at a numeric value."""
+
+    if not isinstance(value, (int, float)):
+        raise TypeError("Evaluation value must be an int or float")
+
+    coefficients = polynomial_coeff_vector(expr, variable)
+    use_float = isinstance(value, float) or any(
+        isinstance(coefficient, float) for coefficient in coefficients
+    )
+
+    if use_float:
+        result = 0.0
+        numeric_value = float(value)
+        for coefficient in coefficients:
+            result = (result * numeric_value) + float(coefficient)
+        return result
+
+    result = 0
+    for coefficient in coefficients:
+        result = (result * value) + coefficient
+    return result
+
+
 def polynomial_leading_term(expr: Expr, variable: str) -> tuple[int, NumberLike]:
     """Return (degree, coefficient) for the leading term of a one-variable polynomial."""
 
