@@ -40,6 +40,46 @@ class BenchmarkMetrics:
     step_count: int
 
 
+@dataclass(frozen=True)
+class BaselineCase:
+    case_id: str
+    operation: str
+    description: str
+    median_ms: float
+    min_ms: float
+    max_ms: float
+    step_count: int
+
+
+@dataclass(frozen=True)
+class BaselineMetadata:
+    schema_version: str
+    captured_at: str
+    python: str
+    platform: str
+    iterations: int
+    warmups: int
+    cases: tuple[BaselineCase, ...]
+
+
+@dataclass(frozen=True)
+class RegressionResult:
+    case_id: str
+    baseline_median_ms: float
+    current_median_ms: float
+    baseline_step_count: int
+    current_step_count: int
+    runtime_regression_pct: float
+    step_count_regression: int
+
+
+@dataclass(frozen=True)
+class BaselineComparison:
+    baseline: BaselineMetadata
+    current: Sequence[BenchmarkMetrics]
+    regressions: tuple[RegressionResult, ...]
+
+
 def default_benchmark_cases() -> tuple[BenchmarkCase, ...]:
     simplify_cases = (
         BenchmarkCase(
@@ -156,6 +196,76 @@ def build_baseline_payload(
     }
 
 
+def load_baseline(path: Path) -> BaselineMetadata:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    schema = data.get("schema_version", "")
+    if schema != BASELINE_SCHEMA_VERSION:
+        raise ValueError(f"Unsupported baseline schema: {schema}")
+    settings = data.get("settings", {})
+    cases_data = data.get("cases", [])
+    baseline_cases = tuple(
+        BaselineCase(
+            case_id=c["id"],
+            operation=c["operation"],
+            description=c["description"],
+            median_ms=c["median_ms"],
+            min_ms=c["min_ms"],
+            max_ms=c["max_ms"],
+            step_count=c["step_count"],
+        )
+        for c in cases_data
+    )
+    return BaselineMetadata(
+        schema_version=schema,
+        captured_at=data.get("captured_at", ""),
+        python=data.get("python", ""),
+        platform=data.get("platform", ""),
+        iterations=settings.get("iterations", 0),
+        warmups=settings.get("warmups", 0),
+        cases=baseline_cases,
+    )
+
+
+def compare_with_baseline(
+    baseline: BaselineMetadata,
+    current: Sequence[BenchmarkMetrics],
+    threshold_runtime_pct: float = 0.0,
+    threshold_steps: int = 0,
+) -> BaselineComparison:
+    baseline_by_id = {c.case_id: c for c in baseline.cases}
+    regressions: list[RegressionResult] = []
+
+    for cur in current:
+        base = baseline_by_id.get(cur.case_id)
+        if base is None:
+            continue
+
+        runtime_regression_pct = ((cur.median_ms - base.median_ms) / base.median_ms) * 100
+        step_count_regression = cur.step_count - base.step_count
+
+        exceeds_runtime = runtime_regression_pct > threshold_runtime_pct
+        exceeds_steps = step_count_regression > threshold_steps
+
+        if exceeds_runtime or exceeds_steps:
+            regressions.append(
+                RegressionResult(
+                    case_id=cur.case_id,
+                    baseline_median_ms=base.median_ms,
+                    current_median_ms=cur.median_ms,
+                    baseline_step_count=base.step_count,
+                    current_step_count=cur.step_count,
+                    runtime_regression_pct=round(runtime_regression_pct, 2),
+                    step_count_regression=step_count_regression,
+                )
+            )
+
+    return BaselineComparison(
+        baseline=baseline,
+        current=current,
+        regressions=tuple(regressions),
+    )
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         prog="stepcas-benchmark",
@@ -169,6 +279,23 @@ def main() -> None:
         help="Optional JSON path for recording a benchmark baseline",
     )
     parser.add_argument(
+        "--baseline-in",
+        type=Path,
+        help="Path to baseline JSON for comparison",
+    )
+    parser.add_argument(
+        "--threshold-runtime-pct",
+        type=float,
+        default=0.0,
+        help="Acceptable runtime regression percentage threshold (absolute, default 0.0)",
+    )
+    parser.add_argument(
+        "--threshold-steps",
+        type=int,
+        default=0,
+        help="Acceptable step-count regression threshold (absolute, default 0)",
+    )
+    parser.add_argument(
         "--json",
         action="store_true",
         help="Emit benchmark results as JSON",
@@ -179,10 +306,53 @@ def main() -> None:
     metrics = run_benchmarks(iterations=args.iterations, warmups=args.warmups)
     payload = build_baseline_payload(metrics, iterations=args.iterations, warmups=args.warmups)
 
-    if args.json:
-        print(json.dumps(payload, indent=2))
+    baseline = None
+    if args.baseline_in is not None:
+        baseline = load_baseline(args.baseline_in)
+
+    if baseline is not None:
+        comparison = compare_with_baseline(
+            baseline,
+            metrics,
+            threshold_runtime_pct=args.threshold_runtime_pct,
+            threshold_steps=args.threshold_steps,
+        )
+        if args.json:
+            output_payload = {
+                "comparison": {
+                    "baseline_schema": comparison.baseline.schema_version,
+                    "baseline_captured_at": comparison.baseline.captured_at,
+                    "regressions": [
+                        {
+                            "case_id": r.case_id,
+                            "baseline_median_ms": r.baseline_median_ms,
+                            "current_median_ms": r.current_median_ms,
+                            "baseline_step_count": r.baseline_step_count,
+                            "current_step_count": r.current_step_count,
+                            "runtime_regression_pct": r.runtime_regression_pct,
+                            "step_count_regression": r.step_count_regression,
+                        }
+                        for r in comparison.regressions
+                    ],
+                },
+                "current": payload,
+            }
+            print(json.dumps(output_payload, indent=2))
+        else:
+            _print_table(metrics)
+            _print_comparison(comparison)
+
+        if comparison.regressions:
+            print("\nREGRESSION DETECTED")
+            print(f"  {len(comparison.regressions)} case(s) exceeded threshold(s)")
+            sys.exit(1)
+        else:
+            print("\nNo regressions detected")
     else:
-        _print_table(metrics)
+        if args.json:
+            print(json.dumps(payload, indent=2))
+        else:
+            _print_table(metrics)
 
     if args.baseline_out is not None:
         args.baseline_out.parent.mkdir(parents=True, exist_ok=True)
@@ -198,6 +368,20 @@ def _print_table(metrics: Sequence[BenchmarkMetrics]) -> None:
             f"{item.case_id:<29}  {item.operation:<11}"
             f"  {item.median_ms:>9.3f}  {item.min_ms:>6.3f}"
             f"  {item.max_ms:>6.3f}  {item.step_count:>5}"
+        )
+
+
+def _print_comparison(comparison: BaselineComparison) -> None:
+    if not comparison.regressions:
+        return
+    print("\nRegressions:")
+    print("case                           baseline_ms  current_ms  runtime_pct  base_steps  cur_steps  step_diff")
+    print("-----------------------------  -----------  ----------  -----------  ---------  ---------  ---------")
+    for r in comparison.regressions:
+        print(
+            f"{r.case_id:<29}  {r.baseline_median_ms:>11.3f}  {r.current_median_ms:>10.3f}"
+            f"  {r.runtime_regression_pct:>11.2f}  {r.baseline_step_count:>9}  {r.current_step_count:>9}"
+            f"  {r.step_count_regression:>9}"
         )
 
 

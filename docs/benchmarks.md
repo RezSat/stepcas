@@ -38,6 +38,34 @@ The baseline file includes:
 - run settings,
 - per-case runtime and step-count metrics.
 
+## Compare against baseline
+
+Use `--baseline-in` to load a baseline and compare current runs:
+
+```bash
+stepcas-benchmark --baseline-in benchmarks/baseline.json
+```
+
+## Threshold-based regression detection
+
+Set thresholds to detect regressions:
+
+```bash
+stepcas-benchmark \
+  --baseline-in benchmarks/baseline.json \
+  --threshold-runtime-pct 10.0 \
+  --threshold-steps 5
+```
+
+- `--threshold-runtime-pct`: Acceptable runtime increase percentage (default 0.0). Only slowdowns count.
+- `--threshold-steps`: Acceptable step-count increase (default 0). Only step-count growth counts.
+
+When a regression is detected, the CLI exits with code 1 and prints a table
+showing which cases exceeded the thresholds.
+
+Use `--json` to get structured output including both baseline comparison
+data and current metrics.
+
 ## Reproducibility notes
 
 For meaningful comparisons, keep these fixed between runs:

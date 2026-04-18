@@ -1,9 +1,18 @@
+import json
 import pytest
+from pathlib import Path
 
 from stepcas.benchmark import (
     BASELINE_SCHEMA_VERSION,
+    BaselineCase,
+    BaselineComparison,
+    BaselineMetadata,
+    BenchmarkMetrics,
+    RegressionResult,
     build_baseline_payload,
+    compare_with_baseline,
     default_benchmark_cases,
+    load_baseline,
     run_benchmarks,
 )
 
@@ -120,3 +129,174 @@ def test_step_count_invariant_matches_traced_result() -> None:
         result = run_fn()
         step_count = len(result.steps)
         assert step_count >= 0, f"Invalid step count for {case_id}: {step_count}"
+
+
+def test_load_baseline_parses_json(tmp_path: Path) -> None:
+    baseline_json = {
+        "schema_version": BASELINE_SCHEMA_VERSION,
+        "captured_at": "2025-01-01T00:00:00+00:00",
+        "python": "3.12.0",
+        "platform": "test-platform",
+        "settings": {"iterations": 30, "warmups": 5},
+        "cases": [
+            {
+                "id": "simplify.test",
+                "operation": "simplify",
+                "description": "test case",
+                "median_ms": 1.5,
+                "min_ms": 1.0,
+                "max_ms": 2.0,
+                "step_count": 10,
+            }
+        ],
+    }
+    path = tmp_path / "baseline.json"
+
+    path.write_text(json.dumps(baseline_json), encoding="utf-8")
+
+    baseline = load_baseline(path)
+
+    assert baseline.schema_version == BASELINE_SCHEMA_VERSION
+    assert baseline.iterations == 30
+    assert baseline.warmups == 5
+    assert len(baseline.cases) == 1
+    assert baseline.cases[0].case_id == "simplify.test"
+    assert baseline.cases[0].median_ms == 1.5
+    assert baseline.cases[0].step_count == 10
+
+
+def test_load_baseline_rejects_unknown_schema(tmp_path: Path) -> None:
+    baseline_json = {
+        "schema_version": "stepcas.benchmark.unknown",
+        "captured_at": "2025-01-01T00:00:00+00:00",
+        "python": "3.12.0",
+        "platform": "test-platform",
+        "settings": {"iterations": 30, "warmups": 5},
+        "cases": [],
+    }
+    path = tmp_path / "bad_baseline.json"
+    import json
+
+    path.write_text(json.dumps(baseline_json), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="Unsupported baseline schema"):
+        load_baseline(path)
+
+
+def test_compare_with_baseline_no_regression() -> None:
+    baseline = BaselineMetadata(
+        schema_version=BASELINE_SCHEMA_VERSION,
+        captured_at="2025-01-01T00:00:00+00:00",
+        python="3.12.0",
+        platform="test",
+        iterations=30,
+        warmups=5,
+        cases=(
+            BaselineCase(
+                case_id="test.case",
+                operation="simplify",
+                description="test",
+                median_ms=1.0,
+                min_ms=0.9,
+                max_ms=1.1,
+                step_count=5,
+            ),
+        ),
+    )
+    current = (
+        BenchmarkMetrics(
+            case_id="test.case",
+            operation="simplify",
+            description="test",
+            median_ms=1.0,
+            min_ms=0.9,
+            max_ms=1.1,
+            step_count=5,
+        ),
+    )
+
+    comparison = compare_with_baseline(baseline, current, threshold_runtime_pct=5.0, threshold_steps=1)
+
+    assert len(comparison.regressions) == 0
+
+
+def test_compare_with_baseline_detects_runtime_regression() -> None:
+    baseline = BaselineMetadata(
+        schema_version=BASELINE_SCHEMA_VERSION,
+        captured_at="2025-01-01T00:00:00+00:00",
+        python="3.12.0",
+        platform="test",
+        iterations=30,
+        warmups=5,
+        cases=(
+            BaselineCase(
+                case_id="test.case",
+                operation="simplify",
+                description="test",
+                median_ms=1.0,
+                min_ms=0.9,
+                max_ms=1.1,
+                step_count=5,
+            ),
+        ),
+    )
+    current = (
+        BenchmarkMetrics(
+            case_id="test.case",
+            operation="simplify",
+            description="test",
+            median_ms=1.5,
+            min_ms=1.4,
+            max_ms=1.6,
+            step_count=5,
+        ),
+    )
+
+    comparison = compare_with_baseline(baseline, current, threshold_runtime_pct=5.0, threshold_steps=1)
+
+    assert len(comparison.regressions) == 1
+    r = comparison.regressions[0]
+    assert r.case_id == "test.case"
+    assert r.runtime_regression_pct > 5.0
+    assert r.step_count_regression == 0
+
+
+def test_compare_with_baseline_detects_step_count_regression() -> None:
+    baseline = BaselineMetadata(
+        schema_version=BASELINE_SCHEMA_VERSION,
+        captured_at="2025-01-01T00:00:00+00:00",
+        python="3.12.0",
+        platform="test",
+        iterations=30,
+        warmups=5,
+        cases=(
+            BaselineCase(
+                case_id="test.case",
+                operation="simplify",
+                description="test",
+                median_ms=1.0,
+                min_ms=0.9,
+                max_ms=1.1,
+                step_count=5,
+            ),
+        ),
+    )
+    current = (
+        BenchmarkMetrics(
+            case_id="test.case",
+            operation="simplify",
+            description="test",
+            median_ms=1.0,
+            min_ms=0.9,
+            max_ms=1.1,
+            step_count=10,
+        ),
+    )
+
+    comparison = compare_with_baseline(baseline, current, threshold_runtime_pct=10.0, threshold_steps=1)
+
+    assert len(comparison.regressions) == 1
+    r = comparison.regressions[0]
+    assert r.case_id == "test.case"
+    assert r.step_count_regression == 5
+    assert r.runtime_regression_pct == 0.0
