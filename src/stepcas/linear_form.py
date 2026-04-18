@@ -9,6 +9,7 @@ from .errors import (
     LinearFormError,
 )
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
+from .variable_analysis import contains_other_symbol, contains_variable
 from .variable_validation import validate_target_variable
 
 
@@ -59,13 +60,13 @@ def _extract_term(term: Expr, variable: str) -> tuple[int | float, int | float]:
     if isinstance(term, Mul):
         return _extract_mul(term, variable)
 
-    if _contains_variable(term, variable):
+    if contains_variable(term, variable):
         raise LinearFormError(
             "Expression has unsupported linear structure for extraction",
             code=LINEAR_UNSUPPORTED_STRUCTURE,
         )
 
-    if _contains_other_symbol(term, variable):
+    if contains_other_symbol(term, variable):
         raise LinearFormError(
             "Expression contains unsupported symbols for one-variable linear extraction",
             code=LINEAR_UNSUPPORTED_SYMBOL,
@@ -90,13 +91,13 @@ def _extract_pow(expr: Pow, variable: str) -> tuple[int | float, int | float]:
             code=LINEAR_NONLINEAR_FORM,
         )
 
-    if _contains_variable(expr, variable):
+    if contains_variable(expr, variable):
         raise LinearFormError(
             "Expression is non-linear in the target variable",
             code=LINEAR_NONLINEAR_FORM,
         )
 
-    if _contains_other_symbol(expr, variable):
+    if contains_other_symbol(expr, variable):
         raise LinearFormError(
             "Expression contains unsupported symbols for one-variable linear extraction",
             code=LINEAR_UNSUPPORTED_SYMBOL,
@@ -142,13 +143,13 @@ def _extract_mul(expr: Mul, variable: str) -> tuple[int | float, int | float]:
                     )
                 continue
 
-        if _contains_variable(factor, variable):
+        if contains_variable(factor, variable):
             raise LinearFormError(
                 "Expression has unsupported linear structure for extraction",
                 code=LINEAR_UNSUPPORTED_STRUCTURE,
             )
 
-        if _contains_other_symbol(factor, variable):
+        if contains_other_symbol(factor, variable):
             raise LinearFormError(
                 "Expression contains unsupported symbols for one-variable linear extraction",
                 code=LINEAR_UNSUPPORTED_SYMBOL,
@@ -171,29 +172,4 @@ def _extract_mul(expr: Mul, variable: str) -> tuple[int | float, int | float]:
     )
 
 
-def _contains_variable(expr: Expr, variable: str) -> bool:
-    if isinstance(expr, Symbol):
-        return expr.name == variable
-    if isinstance(expr, Add):
-        return any(_contains_variable(term, variable) for term in expr.terms)
-    if isinstance(expr, Mul):
-        return any(_contains_variable(factor, variable) for factor in expr.factors)
-    if isinstance(expr, Pow):
-        return _contains_variable(expr.base, variable) or _contains_variable(
-            expr.exponent, variable
-        )
-    return False
 
-
-def _contains_other_symbol(expr: Expr, variable: str) -> bool:
-    if isinstance(expr, Symbol):
-        return expr.name != variable
-    if isinstance(expr, Add):
-        return any(_contains_other_symbol(term, variable) for term in expr.terms)
-    if isinstance(expr, Mul):
-        return any(_contains_other_symbol(factor, variable) for factor in expr.factors)
-    if isinstance(expr, Pow):
-        return _contains_other_symbol(expr.base, variable) or _contains_other_symbol(
-            expr.exponent, variable
-        )
-    return False

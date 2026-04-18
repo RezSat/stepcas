@@ -7,6 +7,7 @@ from .errors import (
     PolynomialError,
 )
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
+from .variable_analysis import contains_other_symbol, contains_variable
 from .variable_validation import validate_target_variable
 
 
@@ -128,13 +129,13 @@ def _term_coefficient_degree(term: Expr, variable: str) -> tuple[NumberLike, int
     if isinstance(term, Mul):
         return _mul_coefficient_degree(term, variable)
 
-    if _contains_variable(term, variable):
+    if contains_variable(term, variable):
         raise PolynomialError(
             "Expression requires expansion before polynomial degree extraction",
             code=POLYNOMIAL_UNSUPPORTED_STRUCTURE,
         )
 
-    if _contains_other_symbol(term, variable):
+    if contains_other_symbol(term, variable):
         raise PolynomialError(
             "Expression contains unsupported symbols for one-variable polynomial extraction",
             code=POLYNOMIAL_UNSUPPORTED_SYMBOL,
@@ -155,13 +156,13 @@ def _pow_degree(expr: Pow, variable: str) -> int:
         exponent = _non_negative_integer_exponent(expr.exponent)
         return exponent
 
-    if _contains_other_symbol(expr, variable):
+    if contains_other_symbol(expr, variable):
         raise PolynomialError(
             "Expression contains unsupported symbols for one-variable polynomial extraction",
             code=POLYNOMIAL_UNSUPPORTED_SYMBOL,
         )
 
-    if _contains_variable(expr, variable):
+    if contains_variable(expr, variable):
         raise PolynomialError(
             "Expression is not a polynomial in the target variable",
             code=POLYNOMIAL_NON_POLYNOMIAL_FORM,
@@ -199,19 +200,19 @@ def _mul_coefficient_degree(expr: Mul, variable: str) -> tuple[NumberLike, int]:
             total_degree += _pow_degree(factor, variable)
             continue
 
-        if isinstance(factor, Add) and _contains_variable(factor, variable):
+        if isinstance(factor, Add) and contains_variable(factor, variable):
             raise PolynomialError(
                 "Expression requires expansion before polynomial degree extraction",
                 code=POLYNOMIAL_UNSUPPORTED_STRUCTURE,
             )
 
-        if _contains_variable(factor, variable):
+        if contains_variable(factor, variable):
             raise PolynomialError(
                 "Expression requires expansion before polynomial degree extraction",
                 code=POLYNOMIAL_UNSUPPORTED_STRUCTURE,
             )
 
-        if _contains_other_symbol(factor, variable):
+        if contains_other_symbol(factor, variable):
             raise PolynomialError(
                 "Expression contains unsupported symbols for one-variable polynomial extraction",
                 code=POLYNOMIAL_UNSUPPORTED_SYMBOL,
@@ -237,29 +238,4 @@ def _non_negative_integer_exponent(exponent: Number) -> int:
     )
 
 
-def _contains_variable(expr: Expr, variable: str) -> bool:
-    if isinstance(expr, Symbol):
-        return expr.name == variable
-    if isinstance(expr, Add):
-        return any(_contains_variable(term, variable) for term in expr.terms)
-    if isinstance(expr, Mul):
-        return any(_contains_variable(factor, variable) for factor in expr.factors)
-    if isinstance(expr, Pow):
-        return _contains_variable(expr.base, variable) or _contains_variable(
-            expr.exponent, variable
-        )
-    return False
 
-
-def _contains_other_symbol(expr: Expr, variable: str) -> bool:
-    if isinstance(expr, Symbol):
-        return expr.name != variable
-    if isinstance(expr, Add):
-        return any(_contains_other_symbol(term, variable) for term in expr.terms)
-    if isinstance(expr, Mul):
-        return any(_contains_other_symbol(factor, variable) for factor in expr.factors)
-    if isinstance(expr, Pow):
-        return _contains_other_symbol(expr.base, variable) or _contains_other_symbol(
-            expr.exponent, variable
-        )
-    return False
