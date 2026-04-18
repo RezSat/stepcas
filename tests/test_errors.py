@@ -10,6 +10,8 @@ from stepcas.errors import (
     PARSE_SYNTAX_ERROR,
     PARSE_UNSUPPORTED_SYNTAX,
     REWRITE_INVALID_RULE_RESULT,
+    REWRITE_ITERATION_LIMIT_EXCEEDED,
+    REWRITE_STEP_LIMIT_EXCEEDED,
     DifferentiationError,
     LinearFormError,
     ParseError,
@@ -90,3 +92,35 @@ def test_linear_form_error_code_for_invalid_target_variable() -> None:
         extract_linear_form(parse_expr("x + 1"), "x+y")
 
     assert exc_info.value.code == LINEAR_UNSUPPORTED_SYMBOL
+
+
+def test_rewrite_error_raises_when_iteration_limit_exceeded() -> None:
+    """Test that non-terminating rule set hits iteration limit."""
+
+    def non_terminating_rule(expr):
+        return Number(1), "Always return 1"
+
+    with pytest.raises(RewriteError) as exc_info:
+        rewrite_fixpoint(Number(0), [("non-terminating", non_terminating_rule)], [], max_iterations=3)
+
+    err = exc_info.value
+    assert err.domain == "rewrite"
+    assert err.code == REWRITE_ITERATION_LIMIT_EXCEEDED
+
+
+def test_rewrite_error_raises_when_step_limit_exceeded() -> None:
+    """Test that non-terminating rule set hits step limit."""
+
+    def ping_pong_rule(expr):
+        if isinstance(expr, Number) and expr.value == 0:
+            return Number(1), "flip to 1"
+        if isinstance(expr, Number) and expr.value == 1:
+            return Number(0), "flip to 0"
+        return None
+
+    with pytest.raises(RewriteError) as exc_info:
+        rewrite_fixpoint(Number(0), [("ping-pong", ping_pong_rule)], [], max_steps=3)
+
+    err = exc_info.value
+    assert err.domain == "rewrite"
+    assert err.code == REWRITE_STEP_LIMIT_EXCEEDED

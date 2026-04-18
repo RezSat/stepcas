@@ -2,7 +2,12 @@ from __future__ import annotations
 
 from typing import Callable, List, Optional
 
-from .errors import REWRITE_INVALID_RULE_RESULT, RewriteError
+from .errors import (
+    REWRITE_INVALID_RULE_RESULT,
+    REWRITE_ITERATION_LIMIT_EXCEEDED,
+    REWRITE_STEP_LIMIT_EXCEEDED,
+    RewriteError,
+)
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
 from .trace import Step
 
@@ -23,10 +28,29 @@ def expr_sort_key(expr: Expr) -> tuple:
     return (99, repr(expr))
 
 
-def rewrite_fixpoint(expr: Expr, rules: List[tuple[str, RuleFn]], steps: List[Step]) -> Expr:
+def rewrite_fixpoint(
+    expr: Expr,
+    rules: List[tuple[str, RuleFn]],
+    steps: List[Step],
+    *,
+    max_iterations: int | None = None,
+    max_steps: int | None = None,
+) -> Expr:
     changed = True
     current = expr
+    iteration = 0
     while changed:
+        if max_iterations is not None and iteration >= max_iterations:
+            raise RewriteError(
+                f"Iteration limit {max_iterations} exceeded (non-terminating rule set)",
+                code=REWRITE_ITERATION_LIMIT_EXCEEDED,
+            )
+        if max_steps is not None and len(steps) >= max_steps:
+            raise RewriteError(
+                f"Step limit {max_steps} exceeded (non-terminating rule set)",
+                code=REWRITE_STEP_LIMIT_EXCEEDED,
+            )
+        iteration += 1
         changed = False
         current, local_changed = _rewrite_once(current, rules, steps)
         changed = local_changed

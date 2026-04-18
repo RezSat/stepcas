@@ -15,6 +15,8 @@ DIFFERENTIATE_UNSUPPORTED_EXPRESSION = "differentiate.unsupported_expression"
 DIFFERENTIATE_UNSUPPORTED_SYMBOL = "differentiate.unsupported_symbol"
 
 REWRITE_INVALID_RULE_RESULT = "rewrite.invalid_rule_result"
+REWRITE_ITERATION_LIMIT_EXCEEDED = "rewrite.iteration_limit_exceeded"
+REWRITE_STEP_LIMIT_EXCEEDED = "rewrite.step_limit_exceeded"
 
 LINEAR_NONLINEAR_FORM = "linear.nonlinear_form"
 LINEAR_UNSUPPORTED_STRUCTURE = "linear.unsupported_structure"
@@ -89,6 +91,8 @@ __all__ = [
     "ParseError",
     "PolynomialError",
     "REWRITE_INVALID_RULE_RESULT",
+    "REWRITE_ITERATION_LIMIT_EXCEEDED",
+    "REWRITE_STEP_LIMIT_EXCEEDED",
     "RewriteError",
     "StepcasError",
 ]
