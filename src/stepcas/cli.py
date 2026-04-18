@@ -8,6 +8,11 @@ from .differentiate import differentiate
 from .errors import StepcasError
 from .json_trace import SCHEMA_VERSION, expr_to_json, step_to_json, trace_result_to_json
 from .parser import parse_expr
+from .polynomial import (
+    polynomial_coefficients,
+    polynomial_coeff_vector,
+    polynomial_degree,
+)
 from .simplify import simplify
 from .solve_linear import (
     InfiniteLinearSolutions,
@@ -42,19 +47,37 @@ def main() -> None:
     solve_parser.add_argument("--steps", action="store_true")
     solve_parser.add_argument("--json", action="store_true")
 
+    poly_parser = subparsers.add_parser("poly", help="Polynomial utilities")
+    poly_parser.add_argument("expression")
+    poly_parser.add_argument("variable")
+    poly_parser.add_argument(
+        "--operation",
+        choices=["degree", "coeffs", "coeff-vector"],
+        default="degree",
+    )
+    poly_parser.add_argument("--json", action="store_true")
+
     args = parser.parse_args()
     try:
         if args.command == "simplify":
             result = simplify(parse_expr(args.expression), trace=args.steps)
         elif args.command == "diff":
             result = differentiate(parse_expr(args.expression), args.variable, trace=args.steps)
-        else:
+        elif args.command == "solve":
             result = solve_linear_equation(
                 parse_expr(args.lhs),
                 parse_expr(args.rhs),
                 args.variable,
                 trace=args.steps,
             )
+        else:  # poly command
+            expr = simplify(parse_expr(args.expression))
+            if args.operation == "degree":
+                result = polynomial_degree(expr, args.variable)
+            elif args.operation == "coeffs":
+                result = polynomial_coefficients(expr, args.variable)
+            else:  # coeff-vector
+                result = polynomial_coeff_vector(expr, args.variable)
     except Exception as error:
         if not args.json:
             raise
@@ -109,6 +132,25 @@ def _result_payload(
             "schema_version": SCHEMA_VERSION,
             "object": "linear_solve_result",
             "data": _linear_result_data(result),
+        }
+    # Handle polynomial utility results (int, dict, list)
+    if isinstance(result, int):
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "object": "polynomial_degree",
+            "data": result,
+        }
+    if isinstance(result, dict):
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "object": "polynomial_coefficients",
+            "data": result,
+        }
+    if isinstance(result, list):
+        return {
+            "schema_version": SCHEMA_VERSION,
+            "object": "polynomial_coeff_vector",
+            "data": result,
         }
     return expr_to_json(result)
 
