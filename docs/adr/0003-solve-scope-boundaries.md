@@ -16,6 +16,24 @@ The built-in solver scope is limited to single-variable linear equations represe
 - non-linear or unsupported structures return structured domain errors,
 - every successful solve path preserves explicit trace steps.
 
+### Input simplification
+
+The solver optionally simplifies both sides before extraction:
+
+- `simplify_input=True` enables preprocessing simplification of the input expressions,
+- when enabled, every simplification step appears before solve steps in the returned trace,
+- this allows mathematically equivalent expressions (e.g., `2*x + (3 + 1)`) to be solved without manual preprocessing.
+
+### Scope boundaries
+
+The solver explicitly does NOT support:
+
+- polynomial equations of degree > 1 (non-linear),
+- equations with multiple target variables,
+- trigonometric, exponential, or logarithmic expressions,
+- piece-wise or conditional expressions,
+- equations with non-numeric coefficients.
+
 ## Consequences
 
 ### Positive

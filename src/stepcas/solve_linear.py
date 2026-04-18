@@ -6,7 +6,8 @@ from enum import Enum
 from .expression import Equation, Expr, Mul, Number, Symbol
 from .errors import LINEAR_UNSUPPORTED_SYMBOL, LinearFormError
 from .linear_form import LinearForm, extract_linear_form
-from .trace import Step
+from .simplify import simplify
+from .trace import Step, TraceResult
 from .variable_validation import validate_target_variable
 
 
@@ -166,6 +167,7 @@ def solve_linear_equation(
     rhs: Expr,
     variable: str,
     trace: bool = False,
+    simplify_input: bool = False,
 ) -> LinearSolveResult | LinearSolveTraceResult:
     variable = validate_target_variable(
         variable,
@@ -173,6 +175,16 @@ def solve_linear_equation(
         code=LINEAR_UNSUPPORTED_SYMBOL,
     )
     steps: list[Step] = []
+
+    if simplify_input:
+        lhs_simp = simplify(lhs, trace=True)
+        rhs_simp = simplify(rhs, trace=True)
+        if isinstance(lhs_simp, TraceResult):
+            steps.extend(lhs_simp.steps)
+            lhs = lhs_simp.expr
+        if isinstance(rhs_simp, TraceResult):
+            steps.extend(rhs_simp.steps)
+            rhs = rhs_simp.expr
 
     lhs_form, rhs_form = extract_both_linear_forms(lhs, rhs, variable)
 
