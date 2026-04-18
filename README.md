@@ -46,7 +46,48 @@ This starter implements:
 - test suite,
 - repo scaffolding for agentic development.
 
-Polynomial utilities validate `variable` strictly: it must be a single symbol name (for example, `"x"`).
+## Variable validation
+
+All polynomial and linear helpers validate the `variable` parameter strictly:
+
+- It must be a single symbol name (for example, `"x"`)
+- The name must be a valid Python identifier (`str.isidentifier()` returns `True`)
+- Invalid inputs raise errors with domain-specific error codes
+
+**Valid:** `"x"`, `"y"`, `"foo"`, `"var1"`
+**Invalid:** `""`, `"x+y"`, `"2x"`, `"x y"`, `None`, `123`
+
+## Linear form prerequisites
+
+`extract_linear_form` and `solve_linear_equation` require the expression to be in canonical linear form (`a*x + b` where `a` and `b` are constants). They do **not** automatically expand or rearrange expressions.
+
+```python
+from stepcas import extract_linear_form, parse_expr
+
+# Works: canonical form a*x + b
+extract_linear_form(parse_expr("3*x - 7"), "x")  # coefficient=3, constant=-7
+extract_linear_form(parse_expr("2*x"), "x")   # coefficient=2, constant=0
+
+# Fails: requires expansion first
+extract_linear_form(parse_expr("(x + 1) * 2"), "x")   # raises LinearFormError
+extract_linear_form(parse_expr("x**2"), "x")           # raises LinearFormError
+```
+
+## Polynomial prerequisites
+
+All polynomial helpers require the expression to be **already expanded** (no unevaluated products or parentheses). They do **not** automatically expand or factor expressions.
+
+```python
+from stepcas import polynomial_degree, parse_expr
+
+# Works: expanded form
+polynomial_degree(parse_expr("3*x**4 + 2*x - 1"), "x")  # 4
+
+# Fails: requires expansion first
+polynomial_degree(parse_expr("(x + 1)**2"), "x")       # raises PolynomialError
+polynomial_degree(parse_expr("x*(x + 1)"), "x")         # raises PolynomialError
+```
+
 `polynomial_trailing_coefficient` returns the degree-zero coefficient and yields `0` when no constant term is present.
 `polynomial_trailing_term` returns the lowest-degree non-zero term as `(degree, coefficient)` and returns `(0, 0)` for the zero polynomial.
 
