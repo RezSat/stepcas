@@ -126,6 +126,14 @@ def test_polynomial_evaluate_integer_value_returns_integer_result() -> None:
     assert polynomial_evaluate(expr, "x", 2) == 13
 
 
+def test_polynomial_evaluate_rejects_invalid_value_type() -> None:
+    expr = simplify(parse_expr("x + 1"))
+    with pytest.raises(TypeError) as exc_info:
+        polynomial_evaluate(expr, "x", "2")
+
+    assert "Evaluation value must be an int or float" in str(exc_info.value)
+
+
 def test_polynomial_evaluate_float_value_returns_float_result() -> None:
     expr = simplify(parse_expr("3*x**2 - 2*x + 5"))
     assert polynomial_evaluate(expr, "x", 0.5) == pytest.approx(4.75)
