@@ -1,7 +1,12 @@
 from .differentiate import differentiate
 from .errors import (
+    DIFFERENTIATE_NON_CONSTANT_EXPONENT,
+    DIFFERENTIATE_UNSUPPORTED_EXPRESSION,
+    DIFFERENTIATE_UNSUPPORTED_SYMBOL,
     DifferentiationError,
     LinearFormError,
+    PARSE_SYNTAX_ERROR,
+    PARSE_UNSUPPORTED_SYNTAX,
     ParseError,
     PolynomialError,
     RewriteError,
@@ -34,6 +39,9 @@ from .trace import Step, TraceResult
 
 __all__ = [
     "Add",
+    "DIFFERENTIATE_NON_CONSTANT_EXPONENT",
+    "DIFFERENTIATE_UNSUPPORTED_EXPRESSION",
+    "DIFFERENTIATE_UNSUPPORTED_SYMBOL",
     "DifferentiationError",
     "Equation",
     "Expr",
@@ -45,6 +53,8 @@ __all__ = [
     "Mul",
     "NoLinearSolution",
     "Number",
+    "PARSE_SYNTAX_ERROR",
+    "PARSE_UNSUPPORTED_SYNTAX",
     "ParseError",
     "PolynomialError",
     "Pow",
