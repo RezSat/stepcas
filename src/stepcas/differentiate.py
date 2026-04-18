@@ -48,13 +48,41 @@ def _differentiate(expr: Expr, variable: str, steps: list[Step]) -> Expr:
         return after
     if isinstance(expr, Mul):
         terms = []
+        skipped = []
         for index, factor in enumerate(expr.factors):
             differentiated = _differentiate(factor, variable, steps)
+            if isinstance(differentiated, Number) and differentiated.value == 0:
+                skipped.append(factor)
+                continue
             new_factors = list(expr.factors)
             new_factors[index] = differentiated
             terms.append(Mul(*new_factors))
+        if len(terms) == 0:
+            after = Number(0)
+            steps.append(
+                Step(
+                    "derivative-product",
+                    expr,
+                    after,
+                    f"All factors constant; derivative of each is zero",
+                )
+            )
+            return after
+        if len(terms) == 1:
+            explanation = (
+                f"Product rule: skip {len(skipped)} factor(s) with zero derivative"
+                if skipped
+                else "Product rule: single non-constant factor"
+            )
+            steps.append(Step("derivative-product", expr, terms[0], explanation))
+            return terms[0]
         after = Add(*terms)
-        steps.append(Step("derivative-product", expr, after, "Apply the product rule"))
+        explanation = (
+            f"Apply the product rule; skip {len(skipped)} factor(s) with zero derivative"
+            if skipped
+            else "Apply the product rule"
+        )
+        steps.append(Step("derivative-product", expr, after, explanation))
         return after
     if isinstance(expr, Pow):
         if isinstance(expr.exponent, Number):

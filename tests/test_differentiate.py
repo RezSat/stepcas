@@ -65,3 +65,43 @@ def test_differentiate_rejects_invalid_target_variable_identifiers(
         differentiate(Symbol("x"), invalid_variable)
 
     assert exc_info.value.code == DIFFERENTIATE_UNSUPPORTED_SYMBOL
+
+
+def test_differentiate_product_mixed_constant_symbol() -> None:
+    assert differentiate(Mul(Number(3), Symbol("x")), "x") == Number(3)
+
+
+def test_differentiate_product_mixed_constant_symbol_trace() -> None:
+    expr = Mul(Number(3), Symbol("x"))
+    trace_result = differentiate(expr, "x", trace=True)
+
+    assert trace_result.expr == Number(3)
+    assert_trace_rule_sequence(
+        trace_result,
+        ["derivative-constant", "derivative-symbol", "derivative-product", "fold-mul-constants", "collapse-single-mul"],
+    )
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_differentiate_product_multiple_constant_symbol() -> None:
+    assert differentiate(Mul(Number(2), Number(3), Symbol("x")), "x") == Number(6)
+
+
+def test_differentiate_product_all_constant() -> None:
+    assert differentiate(Mul(Number(3), Number(5)), "x") == Number(0)
+
+
+def test_differentiate_product_all_constant_trace() -> None:
+    expr = Mul(Number(3), Number(5))
+    trace_result = differentiate(expr, "x", trace=True)
+
+    assert trace_result.expr == Number(0)
+    assert_trace_rule_sequence(
+        trace_result,
+        ["derivative-constant", "derivative-constant", "derivative-product"],
+    )
+    assert_trace_before_after_integrity(expr, trace_result)
+
+
+def test_differentiate_product_two_symbols_one_variable() -> None:
+    assert differentiate(Mul(Symbol("x"), Symbol("y")), "x") == Symbol("y")
