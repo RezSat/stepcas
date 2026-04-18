@@ -85,3 +85,43 @@ def test_trace_result_to_json_is_deterministic_and_stable() -> None:
     assert first["schema_version"] == SCHEMA_VERSION
     assert first["object"] == "trace_result"
     assert [step["rule"] for step in first["data"]["steps"]] == ["first", "second"]
+
+
+def test_step_metadata_rejects_non_json_serializable_types() -> None:
+    # Test that set is not JSON-serializable - should raise TypeError
+    step_with_set = Step(
+        rule="bad",
+        before=Symbol("x"),
+        after=Number(1),
+        metadata={"tags": {"a", "b"}},
+    )
+    import json
+    try:
+        payload = step_to_json(step_with_set)
+        json_str = json.dumps(payload)
+        json.loads(json_str)
+        raise AssertionError("Expected TypeError for non-JSON-serializable set")
+    except TypeError as e:
+        # Expected: serialization rejected
+        assert "Unsupported metadata value" in str(e)
+
+
+def test_step_metadata_rejects_object_instance() -> None:
+    # Test that arbitrary objects are not JSON-serializable - should raise TypeError
+    class Custom:
+        pass
+    step_with_object = Step(
+        rule="bad",
+        before=Symbol("x"),
+        after=Number(1),
+        metadata={"custom": Custom()},
+    )
+    import json
+    try:
+        payload = step_to_json(step_with_object)
+        json_str = json.dumps(payload)
+        json.loads(json_str)
+        raise AssertionError("Expected TypeError for non-JSON-serializable object")
+    except TypeError as e:
+        # Expected: serialization rejected
+        assert "Unsupported metadata value" in str(e)
