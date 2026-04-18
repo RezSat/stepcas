@@ -7,6 +7,7 @@ from .errors import (
     PolynomialError,
 )
 from .expression import Add, Expr, Mul, Number, Pow, Symbol
+from .variable_validation import validate_target_variable
 
 
 NumberLike = int | float
@@ -15,7 +16,11 @@ NumberLike = int | float
 def polynomial_coefficients(expr: Expr, variable: str) -> dict[int, NumberLike]:
     """Return degree-to-coefficient mapping for a one-variable polynomial."""
 
-    _validate_polynomial_variable(variable)
+    validate_target_variable(
+        variable,
+        error_cls=PolynomialError,
+        code=POLYNOMIAL_UNSUPPORTED_SYMBOL,
+    )
 
     terms = expr.terms if isinstance(expr, Add) else (expr,)
     coefficients: dict[int, NumberLike] = {}
@@ -99,15 +104,6 @@ def polynomial_trailing_term(expr: Expr, variable: str) -> tuple[int, NumberLike
     coefficients = polynomial_coefficients(expr, variable)
     degree = min(coefficients)
     return degree, coefficients[degree]
-
-
-def _validate_polynomial_variable(variable: str) -> None:
-    if isinstance(variable, str) and variable and variable.isidentifier():
-        return
-    raise PolynomialError(
-        "Target variable must be a single symbol name",
-        code=POLYNOMIAL_UNSUPPORTED_SYMBOL,
-    )
 
 
 def _term_degree(term: Expr, variable: str) -> int:
