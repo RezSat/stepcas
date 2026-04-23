@@ -133,5 +133,4 @@ That means:
 
 Continue operating autonomously until paused by the user.
 
-
 Do not even try reading `company/tasks.json` it will grow and it's just waste of tokens and memory to even to read it
