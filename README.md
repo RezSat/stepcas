@@ -2,6 +2,8 @@
 
 `stepcas` is a step-first symbolic algebra engine for Python.
 
+### VIBE CODED ALERT!
+
 It is not trying to be a tiny SymPy clone. The goal is different:
 
 - compute exact symbolic results,
